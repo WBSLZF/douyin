@@ -33,4 +33,8 @@ func init() {
 	if err != nil {
 		fmt.Println(err)
 	}
+	err = DB.AutoMigrate(&Comment{}, &UserInfo{}, &UserLogin{}, &Video{})
+	if err != nil {
+		panic(err)
+	}
 }
