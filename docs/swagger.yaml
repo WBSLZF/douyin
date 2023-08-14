@@ -1,0 +1,20 @@
+info:
+  contact: {}
+paths:
+  /douyin/feed:
+    get:
+      consumes:
+      - application/json
+      description: do ping
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: code","response","VideoList",}
+          schema:
+            type: string
+      summary: 获取视频流
+      tags:
+      - 视频
+      - example
+swagger: "2.0"
