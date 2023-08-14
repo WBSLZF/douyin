@@ -33,7 +33,7 @@ func init() {
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = DB.AutoMigrate(&Comment{}, &UserInfo{}, &UserLogin{}, &Video{})
+	err = DB.AutoMigrate(&Video{}, &UserInfo{}, &UserLogin{}, &Comment{})
 	if err != nil {
 		panic(err)
 	}
