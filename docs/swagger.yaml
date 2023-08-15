@@ -1,20 +1,52 @@
+definitions:
+  controller.UserLoginResponse:
+    properties:
+      response:
+        $ref: '#/definitions/model.Response'
+      userLoginData:
+        $ref: '#/definitions/service.UserLoginData'
+    type: object
+  model.Response:
+    properties:
+      status_code:
+        type: integer
+      status_msg:
+        type: string
+    type: object
+  service.UserLoginData:
+    properties:
+      token:
+        type: string
+      user_id:
+        type: integer
+    type: object
 info:
   contact: {}
 paths:
-  /douyin/feed:
-    get:
+  /douyin/user/register/:
+    post:
       consumes:
       - application/json
-      description: do ping
+      description: 用户注册，需要判断用户名是否已经被注册了，以及用户密码是否规范
+      parameters:
+      - description: 账号
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: 密码
+        in: query
+        name: password
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
-          description: code","response","VideoList",}
+          description: OK
           schema:
-            type: string
-      summary: 获取视频流
+            $ref: '#/definitions/controller.UserLoginResponse'
+      summary: 用户注册
       tags:
-      - 视频
-      - example
+      - 用户
 swagger: "2.0"

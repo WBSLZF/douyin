@@ -14,7 +14,7 @@ var err error
 
 func init() {
 	var cfg *ini.File
-	cfg, err = ini.Load("../config/dbConfig.ini")
+	cfg, err = ini.Load("./config/dbConfig.ini")
 	if err != nil {
 		fmt.Printf("Faild to read config file: %v", err)
 		os.Exit(1)

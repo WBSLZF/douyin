@@ -16,9 +16,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/douyin/feed": {
-            "get": {
-                "description": "do ping",
+        "/douyin/user/register/": {
+            "post": {
+                "description": "用户注册，需要判断用户名是否已经被注册了，以及用户密码是否规范",
                 "consumes": [
                     "application/json"
                 ],
@@ -26,17 +26,67 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "视频",
-                    "example"
+                    "用户"
                 ],
-                "summary": "获取视频流",
+                "summary": "用户注册",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "账号",
+                        "name": "username",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "密码",
+                        "name": "password",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "code\",\"response\",\"VideoList\",}",
+                        "description": "OK",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/controller.UserLoginResponse"
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "controller.UserLoginResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "$ref": "#/definitions/model.Response"
+                },
+                "userLoginData": {
+                    "$ref": "#/definitions/service.UserLoginData"
+                }
+            }
+        },
+        "model.Response": {
+            "type": "object",
+            "properties": {
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "service.UserLoginData": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "integer"
                 }
             }
         }
