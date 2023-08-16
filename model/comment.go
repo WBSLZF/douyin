@@ -6,6 +6,6 @@ type Comment struct {
 	Content    string   `json:"content,omitempty"`
 	CreateDate string   `json:"create_date,omitempty"`
 
-	UserInfoId int `json:"-"` //用户与评论一对多的外键
-	VideoId    int `json:"-"` //视频与评论一对多的外键
+	UserInfoId int64 `json:"-"` //用户与评论一对多的外键
+	VideoId    int64 `json:"-"` //视频与评论一对多的外键
 }

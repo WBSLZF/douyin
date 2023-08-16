@@ -38,7 +38,7 @@ func (u UserLogin) Register(name, password string) (*UserLoginData, error) {
 		return nil, err
 	}
 	//2.2 token创建失败
-	token, err := middleware.ReleaseToken(userLogin.UserInfoId)
+	token, err := middleware.ReleaseToken(userLogin)
 	if err != nil {
 		return nil, errors.New("token创建失败")
 	}
@@ -47,14 +47,36 @@ func (u UserLogin) Register(name, password string) (*UserLoginData, error) {
 	return &UserLoginData{Token: token, UserId: userId}, nil
 }
 
-type UserInfoData struct {
-	UserInfo model.UserInfo `json:"user"`
+func (u UserLogin) Login(name, password string) (*UserLoginData, error) {
+	//1. 验证参数是否合法
+	if name == "" {
+		return nil, errors.New("账号为空")
+	}
+	if password == "" {
+		return nil, errors.New("密码为空")
+	}
+	//2. 对数据库进行操作
+	//2.1 判断用户是否已经存在了
+	userExist := dao.UserInfoDao{}.IsUserInfoExistByName(name)
+	if !userExist {
+		return nil, errors.New("该账号不存在")
+	}
+	//2.2 判断密码是否相等
+	userLogin := dao.UserLoginDao{}.FindUserLoginByName(name)
+
+	if password != userLogin.PassWord {
+		return nil, errors.New("密码错误")
+	}
+
+	//2.3 创建token
+	token, err := middleware.ReleaseToken(userLogin)
+	if err != nil {
+		return nil, errors.New("创建token失败")
+	}
+	//3. 返回前端需要的数据，对数据进行封装
+	return &UserLoginData{Token: token, UserId: userLogin.UserInfoId}, nil
 }
 
-func (u UserLogin) Login(name, password string) *UserInfoData {
-	user := &UserInfoData{}
-	//1. 验证参数是否合法
-	//2. 对数据库进行操作
-	//3. 返回前端需要的数据，对数据进行封装
-	return user
+type UserInfoData struct {
+	UserInfo model.UserInfo `json:"user"`
 }

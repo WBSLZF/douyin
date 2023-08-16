@@ -16,8 +16,8 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/douyin/user/register/": {
-            "get": {
+        "/douyin/user/login/": {
+            "post": {
                 "description": "用户登录功能，判断密码是否正确",
                 "consumes": [
                     "application/json"
@@ -49,11 +49,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controller.UserResponse"
+                            "$ref": "#/definitions/controller.UserLoginResponse"
                         }
                     }
                 }
-            },
+            }
+        },
+        "/douyin/user/register/": {
             "post": {
                 "description": "用户注册，需要判断用户名是否已经被注册了，以及用户密码是否规范",
                 "consumes": [
@@ -105,17 +107,6 @@ const docTemplate = `{
                 }
             }
         },
-        "controller.UserResponse": {
-            "type": "object",
-            "properties": {
-                "response": {
-                    "$ref": "#/definitions/model.Response"
-                },
-                "userInfoData": {
-                    "$ref": "#/definitions/service.UserInfoData"
-                }
-            }
-        },
         "model.Response": {
             "type": "object",
             "properties": {
@@ -124,34 +115,6 @@ const docTemplate = `{
                 },
                 "status_msg": {
                     "type": "string"
-                }
-            }
-        },
-        "model.UserInfo": {
-            "type": "object",
-            "properties": {
-                "follow_count": {
-                    "type": "integer"
-                },
-                "follower_count": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "is_follow": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "service.UserInfoData": {
-            "type": "object",
-            "properties": {
-                "user": {
-                    "$ref": "#/definitions/model.UserInfo"
                 }
             }
         },

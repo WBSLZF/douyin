@@ -13,6 +13,6 @@ type Video struct {
 
 	Comments   []*Comment  `json:"-"`                               //视频下有多个评论 一对多
 	Users      []*UserInfo `json:"-" gorm:"many2many:favor_video;"` //用户与视频 多对多
-	UserInfoId int         `json:"-"`                               //用户投稿多个视频 一对多的外键
+	UserInfoId int64       `json:"-"`                               //用户投稿多个视频 一对多的外键
 	CreateAt   time.Time   `json:"-"`                               //创建时间
 }

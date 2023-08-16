@@ -10,16 +10,16 @@ import (
 )
 
 type Claims struct {
-	UserId             int
+	UserId             int64
 	jwt.StandardClaims //jwt的预定义声明
 }
 
 var secret_key = []byte("YYDS")
 
-func ReleaseToken(userInfoId int) (string, error) {
+func ReleaseToken(userLogin model.UserLogin) (string, error) {
 
 	claims := Claims{
-		UserId: userInfoId,
+		UserId: userLogin.UserInfoId,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(24 * time.Hour).Unix(), //token的有效时间为24小时
 			IssuedAt:  time.Now().Unix(),
