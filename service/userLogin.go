@@ -6,6 +6,7 @@ import (
 	"github.com/RaymondCode/simple-demo/dao"
 	"github.com/RaymondCode/simple-demo/middleware"
 	"github.com/RaymondCode/simple-demo/model"
+	"github.com/RaymondCode/simple-demo/utils"
 )
 
 type UserLogin struct {
@@ -25,6 +26,8 @@ func (u UserLogin) Register(name, password string) (*UserLoginData, error) {
 		return nil, errors.New("密码为空")
 	}
 	//2. 对数据库进行操作，以及获取相应的数据
+	//2.fix 对存储在数据库密码进行加密
+	password = utils.MakePassWord(password)
 	userLogin := model.UserLogin{UserCount: name, PassWord: password}
 	userInfo := model.UserInfo{UserLogin: &userLogin, Name: name}
 	//2.1 判断用户是否已经存在了
@@ -64,7 +67,8 @@ func (u UserLogin) Login(name, password string) (*UserLoginData, error) {
 	//2.2 判断密码是否相等
 	userLogin := dao.UserLoginDao{}.FindUserLoginByName(name)
 
-	if password != userLogin.PassWord {
+	//2.fix 加密后再判断是否相等
+	if utils.ValidPassWord(password, userLogin.PassWord) {
 		return nil, errors.New("密码错误")
 	}
 

@@ -18,8 +18,8 @@ func MakePassWord(plainwd string) string {
 	return Md5Encode(plainwd)
 }
 
-// 解密
+// 判断是否相等，若不相等则返回true
 func ValidPassWord(plainwd, password string) bool {
 	encode_password := Md5Encode(plainwd)
-	return encode_password == password
+	return encode_password != password
 }
