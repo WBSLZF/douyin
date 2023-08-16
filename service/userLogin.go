@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/RaymondCode/simple-demo/dao"
+	"github.com/RaymondCode/simple-demo/middleware"
 	"github.com/RaymondCode/simple-demo/model"
 )
 
@@ -36,20 +37,22 @@ func (u UserLogin) Register(name, password string) (*UserLoginData, error) {
 	if err != nil {
 		return nil, err
 	}
-	//2.2 token的获取
-	token := name + password
+	//2.2 token创建失败
+	token, err := middleware.ReleaseToken(userLogin.UserInfoId)
+	if err != nil {
+		return nil, errors.New("token创建失败")
+	}
 	userId := userInfo.Id
 	//3. 返回需要的数据，对数据进行封装
 	return &UserLoginData{Token: token, UserId: userId}, nil
 }
 
-type UserResponse struct {
-	Response model.Response
+type UserInfoData struct {
 	UserInfo model.UserInfo `json:"user"`
 }
 
-func (u UserLogin) Login(name, password string) UserResponse {
-	user := UserResponse{}
+func (u UserLogin) Login(name, password string) *UserInfoData {
+	user := &UserInfoData{}
 	//1. 验证参数是否合法
 	//2. 对数据库进行操作
 	//3. 返回前端需要的数据，对数据进行封装

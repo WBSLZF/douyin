@@ -6,12 +6,37 @@ definitions:
       userLoginData:
         $ref: '#/definitions/service.UserLoginData'
     type: object
+  controller.UserResponse:
+    properties:
+      response:
+        $ref: '#/definitions/model.Response'
+      userInfoData:
+        $ref: '#/definitions/service.UserInfoData'
+    type: object
   model.Response:
     properties:
       status_code:
         type: integer
       status_msg:
         type: string
+    type: object
+  model.UserInfo:
+    properties:
+      follow_count:
+        type: integer
+      follower_count:
+        type: integer
+      id:
+        type: integer
+      is_follow:
+        type: boolean
+      name:
+        type: string
+    type: object
+  service.UserInfoData:
+    properties:
+      user:
+        $ref: '#/definitions/model.UserInfo'
     type: object
   service.UserLoginData:
     properties:
@@ -24,6 +49,31 @@ info:
   contact: {}
 paths:
   /douyin/user/register/:
+    get:
+      consumes:
+      - application/json
+      description: 用户登录功能，判断密码是否正确
+      parameters:
+      - description: 账号
+        in: query
+        name: username
+        required: true
+        type: string
+      - description: 密码
+        in: query
+        name: password
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.UserResponse'
+      summary: 用户登录
+      tags:
+      - 用户
     post:
       consumes:
       - application/json

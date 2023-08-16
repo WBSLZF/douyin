@@ -24,13 +24,6 @@ var usersLoginInfo = map[string]User{
 type UserLoginResponse struct {
 	Response      model.Response
 	UserLoginData *service.UserLoginData
-	// UserId int64  `json:"user_id,omitempty"`
-	// Token  string `json:"token"`
-}
-
-type UserResponse struct {
-	Response model.Response
-	User     User `json:"user"`
 }
 
 // Register 用户注册
@@ -68,35 +61,50 @@ func Register(c *gin.Context) {
 	}
 }
 
+type UserResponse struct {
+	Response     model.Response
+	UserInfoData *service.UserInfoData
+}
+
+// Login 用户登录
+// @Summary 用户登录
+// @Description 用户登录功能，判断密码是否正确
+// @Tags 用户
+// @Accept application/json
+// @Produce application/json
+// @Param username query string true "账号"
+// @Param password query string true "密码"
+// @Success 200 {object} UserResponse
+// @Router /douyin/user/register/ [get]
 func Login(c *gin.Context) {
 	// username := c.Query("username")
 	// password := c.Query("password")
 
 	// token := username + password
 
-	// // if user, exist := usersLoginInfo[token]; exist {
-	// // 	c.JSON(http.StatusOK, UserLoginResponse{
-	// // 		Response:      model.Response{StatusCode: 0},
-	// // 		UserLoginData: &service.UserLogin{},
-	// // 	})
-	// // } else {
-	// // 	c.JSON(http.StatusOK, UserLoginResponse{
-	// // 		Response: model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
-	// // 	})
-	// // }
+	// if user, exist := usersLoginInfo[token]; exist {
+	// 	c.JSON(http.StatusOK, UserLoginResponse{
+	// 		Response:      model.Response{StatusCode: 0},
+	// 		UserLoginData: &service.UserLogin{},
+	// 	})
+	// } else {
+	// 	c.JSON(http.StatusOK, UserLoginResponse{
+	// 		Response: model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
+	// 	})
+	// }
 }
 
 func UserInfo(c *gin.Context) {
-	token := c.Query("token")
+	// token := c.Query("token")
 
-	if user, exist := usersLoginInfo[token]; exist {
-		c.JSON(http.StatusOK, UserResponse{
-			Response: model.Response{StatusCode: 0},
-			User:     user,
-		})
-	} else {
-		c.JSON(http.StatusOK, UserResponse{
-			Response: model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
-		})
-	}
+	// if user, exist := usersLoginInfo[token]; exist {
+	// 	c.JSON(http.StatusOK, UserResponse{
+	// 		Response:     model.Response{StatusCode: 0},
+	// 		UserInfoData: service.UserInfoData{},
+	// 	})
+	// } else {
+	// 	c.JSON(http.StatusOK, UserResponse{
+	// 		Response: model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
+	// 	})
+	// }
 }
