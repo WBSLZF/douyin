@@ -43,7 +43,7 @@ func Register(c *gin.Context) {
 	userLoginData, err := service.UserLogin{}.Register(username, password)
 
 	if err != nil {
-		c.JSON(http.StatusOK, UserLoginResponse{
+		c.JSON(http.StatusConflict, UserLoginResponse{
 			Response: model.Response{StatusCode: 1, StatusMsg: err.Error()},
 		})
 		return
@@ -70,7 +70,7 @@ func Login(c *gin.Context) {
 	password := c.Query("password")
 	userLoginData, err := service.UserLogin{}.Login(username, password)
 	if err != nil {
-		c.JSON(http.StatusOK, UserLoginResponse{
+		c.JSON(http.StatusUnauthorized, UserLoginResponse{
 			Response: model.Response{StatusCode: 1, StatusMsg: err.Error()},
 		})
 		return
