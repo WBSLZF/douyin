@@ -22,12 +22,26 @@ type Comment struct {
 	CreateDate string `json:"create_date,omitempty"`
 }
 
+//type User struct {
+//	Id            int64  `json:"id,omitempty"`
+//	Name          string `json:"name,omitempty"`
+//	FollowCount   int64  `json:"follow_count,omitempty"`
+//	FollowerCount int64  `json:"follower_count,omitempty"`
+//	IsFollow      bool   `json:"is_follow,omitempty"`
+//}
+
 type User struct {
-	Id            int64  `json:"id,omitempty"`
-	Name          string `json:"name,omitempty"`
-	FollowCount   int64  `json:"follow_count,omitempty"`
-	FollowerCount int64  `json:"follower_count,omitempty"`
-	IsFollow      bool   `json:"is_follow,omitempty"`
+	Id              int64  `json:"id,omitempty"`
+	Name            string `json:"name,omitempty"`
+	FollowCount     int64  `json:"follow_count,omitempty"`
+	FollowerCount   int64  `json:"follower_count,omitempty"`
+	IsFollow        bool   `json:"is_follow,omitempty"`
+	Avatar          string `json:"avatar,omitempty"`
+	BackgroundImage string `json:"background_Image,omitempty"`
+	Signature       string `json:"signature,omitempty"`
+	TotalFavorited  string `json:"total_Favorited,omitempty"`
+	WorkCount       string `json:"work_count,omitempty"`
+	FavoriteCount   string `json:"favorite___count,omitempty"`
 }
 
 type Message struct {

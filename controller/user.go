@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/RaymondCode/simple-demo/model"
 	"github.com/RaymondCode/simple-demo/service"
@@ -51,10 +52,11 @@ func Register(c *gin.Context) {
 
 	c.JSON(http.StatusOK, UserLoginResponse{
 		Response:      model.Response{StatusCode: 0, StatusMsg: "注册成功"},
-		UserLoginData: userLoginData,
+		UserLoginData: userLoginData, //加了这个？
 	})
 }
 
+// 重新git pull
 // Login 用户登录
 // @Summary 用户登录
 // @Description 用户登录功能，判断密码是否正确
@@ -81,22 +83,30 @@ func Login(c *gin.Context) {
 	})
 }
 
-type UserInfoResponse struct {
-	Response     model.Response
-	UserInfoData *service.UserInfoData
+//type UserInfoResponse struct {
+//	Response     model.Response
+//	UserInfoData *service.UserInfoData
+//}
+
+type UserinfoResponse struct {
+	model.Response
+	User model.UserInfo `json:"user"`
 }
 
+// 实现用户信息的获取
 func UserInfo(c *gin.Context) {
-	// token := c.Query("token")
+	userId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
+	token := c.Query("token")
 
-	// if user, exist := usersLoginInfo[token]; exist {
-	// 	c.JSON(http.StatusOK, UserResponse{
-	// 		Response:     model.Response{StatusCode: 0},
-	// 		UserInfoData: service.UserInfoData{},
-	// 	})
-	// } else {
-	// 	c.JSON(http.StatusOK, UserResponse{
-	// 		Response: model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
-	// 	})
-	// }
+	user, err := service.Userinfo{}.SelectUserInfoById(userId, token)
+	if err != nil {
+		c.JSON(http.StatusOK, UserinfoResponse{
+			Response: model.Response{StatusCode: 0, StatusMsg: err.Error()},
+		})
+	}
+
+	c.JSON(http.StatusOK, UserinfoResponse{
+		Response: model.Response{StatusCode: 0},
+		User:     user,
+	})
 }

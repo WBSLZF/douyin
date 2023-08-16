@@ -2,6 +2,7 @@ package main
 
 import (
 	message "github.com/RaymondCode/simple-demo/messsage"
+	_ "github.com/RaymondCode/simple-demo/model"
 	"github.com/gin-gonic/gin"
 )
 

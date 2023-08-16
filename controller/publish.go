@@ -2,8 +2,10 @@ package controller
 
 import (
 	"fmt"
+	"github.com/RaymondCode/simple-demo/service"
 	"net/http"
 	"path/filepath"
+	"strconv"
 
 	"github.com/RaymondCode/simple-demo/model"
 	"github.com/gin-gonic/gin"
@@ -50,12 +52,31 @@ func Publish(c *gin.Context) {
 	})
 }
 
+type VideoResponse struct {
+	Response  model.Response
+	VideoList []model.Video `json:"video_list"`
+}
+
 // PublishList all users have same publish video list
 func PublishList(c *gin.Context) {
-	c.JSON(http.StatusOK, VideoListResponse{
-		Response: model.Response{
-			StatusCode: 0,
-		},
-		VideoList: DemoVideos,
+	userId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
+	token := c.Query("token")
+
+	videolist, err := service.Videos{}.Getlist(userId, token)
+	if err != nil {
+		c.JSON(http.StatusOK, VideoResponse{
+			Response: model.Response{StatusCode: 1, StatusMsg: err.Error()},
+		})
+	}
+
+	c.JSON(http.StatusOK, VideoResponse{
+		Response:  model.Response{StatusCode: 1},
+		VideoList: videolist,
 	})
+	//c.JSON(http.StatusOK, VideoListResponse{
+	//	Response: model.Response{
+	//		StatusCode: 0,
+	//	},
+	//	VideoList: DemoVideos,
+	//})
 }
