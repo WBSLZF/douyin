@@ -23,8 +23,8 @@ var usersLoginInfo = map[string]User{
 }
 
 type UserLoginResponse struct {
-	Response      model.Response
-	UserLoginData *service.UserLoginData
+	model.Response
+	*service.UserLoginData
 }
 
 // Register 用户注册
