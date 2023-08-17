@@ -1,20 +1,10 @@
 definitions:
   controller.UserLoginResponse:
     properties:
-      response:
-        $ref: '#/definitions/model.Response'
-      userLoginData:
-        $ref: '#/definitions/service.UserLoginData'
-    type: object
-  model.Response:
-    properties:
       status_code:
         type: integer
       status_msg:
         type: string
-    type: object
-  service.UserLoginData:
-    properties:
       token:
         type: string
       user_id:

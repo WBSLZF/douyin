@@ -99,28 +99,12 @@ const docTemplate = `{
         "controller.UserLoginResponse": {
             "type": "object",
             "properties": {
-                "response": {
-                    "$ref": "#/definitions/model.Response"
-                },
-                "userLoginData": {
-                    "$ref": "#/definitions/service.UserLoginData"
-                }
-            }
-        },
-        "model.Response": {
-            "type": "object",
-            "properties": {
                 "status_code": {
                     "type": "integer"
                 },
                 "status_msg": {
                     "type": "string"
-                }
-            }
-        },
-        "service.UserLoginData": {
-            "type": "object",
-            "properties": {
+                },
                 "token": {
                     "type": "string"
                 },
