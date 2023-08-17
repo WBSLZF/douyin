@@ -96,9 +96,10 @@ type UserinfoResponse struct {
 // 实现用户信息的获取
 func UserInfo(c *gin.Context) {
 	userId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
-	token := c.Query("token")
+	ownIdAny, _ := c.Get("user_id")
+	ownId := ownIdAny.(int64)
 
-	user, err := service.Userinfo{}.SelectUserInfoById(userId, token)
+	user, err := service.Userinfo{}.SelectUserInfoById(userId, ownId)
 	if err != nil {
 		c.JSON(http.StatusOK, UserinfoResponse{
 			Response: model.Response{StatusCode: 0, StatusMsg: err.Error()},
