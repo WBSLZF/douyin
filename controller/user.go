@@ -22,8 +22,8 @@ var usersLoginInfo = map[string]User{
 }
 
 type UserLoginResponse struct {
-	Response      model.Response
-	UserLoginData *service.UserLoginData
+	model.Response
+	*service.UserLoginData
 }
 
 // Register 用户注册
@@ -43,7 +43,7 @@ func Register(c *gin.Context) {
 	userLoginData, err := service.UserLogin{}.Register(username, password)
 
 	if err != nil {
-		c.JSON(http.StatusConflict, UserLoginResponse{
+		c.JSON(http.StatusOK, UserLoginResponse{
 			Response: model.Response{StatusCode: 1, StatusMsg: err.Error()},
 		})
 		return
@@ -70,7 +70,7 @@ func Login(c *gin.Context) {
 	password := c.Query("password")
 	userLoginData, err := service.UserLogin{}.Login(username, password)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, UserLoginResponse{
+		c.JSON(http.StatusOK, UserLoginResponse{
 			Response: model.Response{StatusCode: 1, StatusMsg: err.Error()},
 		})
 		return
@@ -82,8 +82,8 @@ func Login(c *gin.Context) {
 }
 
 type UserInfoResponse struct {
-	Response     model.Response
-	UserInfoData *service.UserInfoData
+	model.Response
+	*service.UserInfoData
 }
 
 func UserInfo(c *gin.Context) {
