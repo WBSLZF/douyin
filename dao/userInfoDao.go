@@ -19,7 +19,7 @@ func (u UserInfoDao) IsUserInfoExistByName(name string) bool {
 }
 
 // 根据id查找基本信息
-func (u UserInfoDao) SelectInfoById(userid int64) model.UserInfo {
+func (u UserInfoDao) GetInfoById(userid int64) model.UserInfo {
 	userinfo := model.UserInfo{}
 	model.DB.Where(userid).Find(&userinfo)
 

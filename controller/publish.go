@@ -53,16 +53,26 @@ func Publish(c *gin.Context) {
 }
 
 type VideoResponse struct {
-	Response  model.Response
+	model.Response
 	VideoList []model.Video `json:"video_list"`
 }
 
 // PublishList all users have same publish video list
 func PublishList(c *gin.Context) {
 	userId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
-	token := c.Query("token")
+	ownIdAny, _ := c.Get("user_id")
+	ownId := ownIdAny.(int64)
 
-	videolist, err := service.Videos{}.Getlist(userId, token)
+	//根据userid获取userinfo
+	user, err := service.Userinfo{}.SelectUserInfoById(userId, ownId)
+	if err != nil {
+		c.JSON(http.StatusOK, UserinfoResponse{
+			Response: model.Response{StatusCode: 0, StatusMsg: err.Error()},
+		})
+	}
+
+	//根据userinfo获取video
+	videolist, err := service.Videos{}.Getvideolist(user)
 	if err != nil {
 		c.JSON(http.StatusOK, VideoResponse{
 			Response: model.Response{StatusCode: 1, StatusMsg: err.Error()},
@@ -73,10 +83,4 @@ func PublishList(c *gin.Context) {
 		Response:  model.Response{StatusCode: 1},
 		VideoList: videolist,
 	})
-	//c.JSON(http.StatusOK, VideoListResponse{
-	//	Response: model.Response{
-	//		StatusCode: 0,
-	//	},
-	//	VideoList: DemoVideos,
-	//})
 }

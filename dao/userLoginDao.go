@@ -7,6 +7,6 @@ type UserLoginDao struct {
 
 func (u UserLoginDao) FindUserLoginByName(name string) model.UserLogin {
 	userLogin := model.UserLogin{}
-	model.DB.Where("user_count = ?", name).Find(&userLogin)
+	model.DB.Table("user_relation").Where("user_count = ?", name).Find(&userLogin)
 	return userLogin
 }
