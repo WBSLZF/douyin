@@ -1,13 +1,12 @@
 package main
 
 import (
-	message "github.com/RaymondCode/simple-demo/messsage"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 
-	go message.RunMessageServer()
+	go service.RunMessageServer()
 
 	r := gin.Default()
 	initRouter(r)
