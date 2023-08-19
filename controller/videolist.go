@@ -98,7 +98,7 @@ func (p *ProxyFeedVideoList) FeedVideoListOk(videoList *service.FeedVideoList) {
 		Response: model.Response{
 			StatusCode: 0,
 		},
-		videoResponse: videoList,
+		FeedVideoList: videoList,
 	},
 	)
 }
