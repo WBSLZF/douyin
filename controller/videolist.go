@@ -36,21 +36,13 @@ func FeedVideoListHandler(c *gin.Context) {
 	}
 }
 
-type ProxyFeedVideoList struct {
-	*gin.Context
-}
-
-func NewProxyFeedVideoList(c *gin.Context) *ProxyFeedVideoList {
-	return &ProxyFeedVideoList{Context: c}
-}
-
 // DoNoToken 未登录的视频流推送处理
 func (p *ProxyFeedVideoList) DoNoToken() error {
 	rawTimestamp := p.Query("latest_time")
 	var latestTime time.Time
 	intTime, err := strconv.ParseInt(rawTimestamp, 10, 64)
 	if err == nil {
-		latestTime = time.Unix(0, intTime*1e6) //注意：前端传来的时间戳是以ms为单位的
+		latestTime = time.Unix(0, intTime*1e6)
 	}
 	videoList, err := service.QueryFeedVideoList(0, latestTime)
 	if err != nil {
@@ -64,10 +56,11 @@ func (p *ProxyFeedVideoList) DoNoToken() error {
 func (p *ProxyFeedVideoList) DoHasToken(token string) error {
 	//解析成功
 	if claim, ok := middleware.ParseToken(token); ok {
-		//token超时
+		// token超时
 		if time.Now().Unix() > claim.ExpiresAt {
 			return errors.New("token超时")
 		}
+
 		rawTimestamp := p.Query("latest_time")
 		var latestTime time.Time
 		intTime, err := strconv.ParseInt(rawTimestamp, 10, 64)
@@ -87,10 +80,12 @@ func (p *ProxyFeedVideoList) DoHasToken(token string) error {
 }
 
 func (p *ProxyFeedVideoList) FeedVideoListError(msg string) {
-	p.JSON(http.StatusOK, videoResponse{Response: model.Response{
-		StatusCode: 1,
-		StatusMsg:  msg,
-	}})
+	p.JSON(http.StatusOK, videoResponse{
+		Response: model.Response{
+			StatusCode: 1,
+			StatusMsg:  msg,
+		},
+	})
 }
 
 func (p *ProxyFeedVideoList) FeedVideoListOk(videoList *service.FeedVideoList) {
@@ -101,4 +96,12 @@ func (p *ProxyFeedVideoList) FeedVideoListOk(videoList *service.FeedVideoList) {
 		FeedVideoList: videoList,
 	},
 	)
+}
+
+type ProxyFeedVideoList struct {
+	*gin.Context
+}
+
+func NewProxyFeedVideoList(c *gin.Context) *ProxyFeedVideoList {
+	return &ProxyFeedVideoList{Context: c}
 }

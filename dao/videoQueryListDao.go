@@ -2,6 +2,7 @@ package dao
 
 import (
 	"errors"
+	"sync"
 	"time"
 
 	"github.com/RaymondCode/simple-demo/model"
@@ -10,12 +11,23 @@ import (
 type VideoDAO struct {
 }
 
+var (
+	videoDAO  *VideoDAO
+	videoOnce sync.Once
+)
+
+func NewVideoDAO() *VideoDAO {
+	videoOnce.Do(func() {
+		videoDAO = new(VideoDAO)
+	})
+	return videoDAO
+}
+
 // QueryVideoListByLatestTime  返回按投稿时间倒序的视频列表，并限制为最多limit个
 func (v *VideoDAO) QueryVideoListByLatestTime(limit int, latestTime time.Time, videoList *[]*model.Video) error {
 	if videoList == nil {
 		return errors.New("QueryVideoListByLimit videoList 空指针")
 	}
-
 	return model.DB.Model(&model.Video{}).Where("create_at < ?", latestTime).
 		Order("create_at ASC").Limit(limit).
 		Select([]string{"id", "user_info_id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "create_at"}).
