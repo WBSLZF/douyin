@@ -44,44 +44,40 @@ func (q *QueryFeedVideoListFlow) Do() (*FeedVideoList, error) {
 	if err := q.prepareData(); err != nil {
 		return nil, err
 	}
-	if err := q.packData(); err != nil {
-		return nil, err
+	q.feedVideo = &FeedVideoList{
+		Videos:   q.videos,
+		NextTime: q.nextTime,
 	}
 	return q.feedVideo, nil
 }
 
 func (q *QueryFeedVideoListFlow) prepareData() error {
-	vdao := &dao.VideoDAO{}
-	err := vdao.QueryVideoListByLatestTime(MaxVideoNum, q.latestTime, &q.videos)
+	err := dao.NewVideoDAO().QueryVideoListByLatestTime(MaxVideoNum, q.latestTime, &q.videos)
 	if err != nil {
 		return err
 	}
-
-	//如果用户为登录状态，则更新该视频是否被该用户点赞的状态
-	latestTime, _ := FillVideoListFields(q.userId, &q.videos)
-
-	//准备好时间戳
-	if latestTime != nil {
-		q.nextTime = (*latestTime).UnixNano() / 1e6
-		return nil
+	if q.userId != 1 {
+		//如果用户为登录状态，则更新该视频是否被该用户点赞的状态
+		latestTime, _ := FillVideoListFields(q.userId, &q.videos)
+		//准备好时间戳
+		if latestTime != nil {
+			q.nextTime = (*latestTime).UnixNano() / 1e6
+			return nil
+		}
 	}
 	q.nextTime = time.Now().Unix() / 1e6
-	return nil
-}
-
-func (q *QueryFeedVideoListFlow) packData() error {
-	q.feedVideo = &FeedVideoList{
-		Videos:   q.videos,
-		NextTime: q.nextTime,
-	}
 	return nil
 }
 
 // FillVideoListFields 填充每个视频的作者信息（因为作者与视频的一对多关系，数据库中存下的是作者的id
 // 当userId>0时，我们判断当前为登录状态，其余情况为未登录状态，则不需要填充IsFavorite字段
 func FillVideoListFields(userId int64, videos *[]*model.Video) (*time.Time, error) {
+
+	if videos == nil {
+		return nil, errors.New("util.FillVideoListFields videos为空")
+	}
 	size := len(*videos)
-	if videos == nil || size == 0 {
+	if size == 0 {
 		return nil, errors.New("util.FillVideoListFields videos为空")
 	}
 	userdao := dao.UserInfoDao{}
