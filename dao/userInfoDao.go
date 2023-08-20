@@ -1,6 +1,9 @@
 package dao
 
 import (
+	"errors"
+	"sync"
+
 	"github.com/RaymondCode/simple-demo/model"
 )
 
@@ -40,4 +43,29 @@ func (u UserInfoDao) IsFollow(own_id, userid int64) bool {
 	} else {
 		return false
 	}
+}
+
+var (
+	userInfoDao  *UserInfoDao
+	userInfoOnce sync.Once
+)
+
+func NewUserInfoDao() *UserInfoDao {
+	userInfoOnce.Do(func() {
+		userInfoDao = new(UserInfoDao)
+	})
+	return userInfoDao
+}
+
+func (u *UserInfoDao) QueryUserInfoById(userId int64, userinfo *model.UserInfo) error {
+	if userinfo == nil {
+		return nil
+	}
+	//DB.Where("id=?",userId).First(userinfo)
+	model.DB.Where("id=?", userId).Select([]string{"id", "name", "follow_count", "follower_count", "is_follow"}).First(userinfo)
+	//id为零值，说明sql执行失败
+	if userinfo.Id == 0 {
+		return errors.New("该用户不存在")
+	}
+	return nil
 }
