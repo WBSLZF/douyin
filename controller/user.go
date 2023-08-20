@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/RaymondCode/simple-demo/model"
 	"github.com/RaymondCode/simple-demo/service"
@@ -81,22 +82,26 @@ func Login(c *gin.Context) {
 	})
 }
 
-type UserInfoResponse struct {
+type UserinfoResponse struct {
 	model.Response
-	*service.UserInfoData
+	User model.UserInfo `json:"user"`
 }
 
+// 实现用户信息的获取
 func UserInfo(c *gin.Context) {
-	// token := c.Query("token")
+	userId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
+	ownIdAny, _ := c.Get("user_id")
+	ownId := ownIdAny.(int64)
 
-	// if user, exist := usersLoginInfo[token]; exist {
-	// 	c.JSON(http.StatusOK, UserResponse{
-	// 		Response:     model.Response{StatusCode: 0},
-	// 		UserInfoData: service.UserInfoData{},
-	// 	})
-	// } else {
-	// 	c.JSON(http.StatusOK, UserResponse{
-	// 		Response: model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"},
-	// 	})
-	// }
+	user, err := service.Userinfo{}.SelectUserInfoById(userId, ownId)
+	if err != nil {
+		c.JSON(http.StatusOK, UserinfoResponse{
+			Response: model.Response{StatusCode: 0, StatusMsg: err.Error()},
+		})
+	}
+
+	c.JSON(http.StatusOK, UserinfoResponse{
+		Response: model.Response{StatusCode: 0},
+		User:     user,
+	})
 }
