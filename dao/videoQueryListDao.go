@@ -2,7 +2,7 @@ package dao
 
 import (
 	"errors"
-	"sync"
+	// "sync"
 	"time"
 
 	"github.com/RaymondCode/simple-demo/model"
@@ -11,16 +11,17 @@ import (
 type VideoDAO struct {
 }
 
-var (
-	videoDAO  *VideoDAO
-	videoOnce sync.Once
-)
-
-func NewVideoDAO() *VideoDAO {
-	videoOnce.Do(func() {
-		videoDAO = new(VideoDAO)
-	})
-	return videoDAO
+func (v *VideoDAO) QueryUserInfoById(userId int64, userinfo *model.UserInfo) error {
+	if userinfo == nil {
+		return nil
+	}
+	//DB.Where("id=?",userId).First(userinfo)
+	model.DB.Where("id=?", userId).Select([]string{"id", "name", "follow_count", "follower_count", "is_follow"}).First(userinfo)
+	//id为零值，说明sql执行失败
+	if userinfo.Id == 0 {
+		return errors.New("该用户不存在")
+	}
+	return nil
 }
 
 // QueryVideoListByLatestTime  返回按投稿时间倒序的视频列表，并限制为最多limit个
