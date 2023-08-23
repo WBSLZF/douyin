@@ -226,6 +226,17 @@ const docTemplate = `{
         "model.UserInfo": {
             "type": "object",
             "properties": {
+                "avatar": {
+                    "description": "用户头像",
+                    "type": "string"
+                },
+                "background_image": {
+                    "description": "用户背景",
+                    "type": "string"
+                },
+                "favorite_count": {
+                    "type": "integer"
+                },
                 "follow_count": {
                     "type": "integer"
                 },
@@ -240,6 +251,13 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "total_favorited": {
+                    "type": "string"
+                },
+                "work_count": {
+                    "description": "用户作品数量",
+                    "type": "integer"
                 }
             }
         },

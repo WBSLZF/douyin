@@ -26,6 +26,11 @@ func (u UserInfoDao) GetInfoById(userid int64) model.UserInfo {
 	return userinfo
 }
 
+// 更新用户
+func (u UserInfoDao) UpdateUserInfo(userInfo model.UserInfo) error {
+	return model.DB.Save(&userInfo).Error
+}
+
 type Relation struct {
 	UserInfoId int64 `json:"user_info_id"`
 	FollowId   int64 `json:"follow_id"`

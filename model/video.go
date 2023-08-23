@@ -4,7 +4,7 @@ import "time"
 
 type Video struct {
 	Id            int64       `json:"id,omitempty"`
-	Author        UserInfo    `json:"author" gorm:"-;"` //视频作者的相关信息
+	Author        UserInfo    `json:"author" gorm:"-"` //视频作者的相关信息
 	PlayUrl       string      `json:"play_url,omitempty"`
 	CoverUrl      string      `json:"cover_url,omitempty"`
 	FavoriteCount int64       `json:"favorite_count,omitempty"`
