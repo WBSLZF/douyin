@@ -1,8 +1,6 @@
 package dao
 
 import (
-	"errors"
-
 	"github.com/RaymondCode/simple-demo/model"
 )
 
@@ -19,7 +17,6 @@ func (u UserInfoDao) IsUserInfoExistByName(name string) bool {
 	model.DB.Where("name = ?", name).Find(&userInfo)
 	return userInfo.Name != ""
 }
-
 
 // 根据id查找基本信息
 func (u UserInfoDao) GetInfoById(userid int64) model.UserInfo {
@@ -49,5 +46,3 @@ func (u UserInfoDao) IsFollow(own_id, userid int64) bool {
 		return false
 	}
 }
-
-
