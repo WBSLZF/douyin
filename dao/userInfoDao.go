@@ -26,15 +26,15 @@ func (u UserInfoDao) GetInfoById(userid int64) model.UserInfo {
 	return userinfo
 }
 
-type reation struct {
+type Relation struct {
 	UserInfoId int64 `json:"user_info_id"`
 	FollowId   int64 `json:"follow_id"`
 }
 
 // 根据两个id判断是否follow
 func (u UserInfoDao) IsFollow(own_id, userid int64) bool {
-	reation := reation{own_id, userid}
-	result := model.DB.Table("user_relation").Find(reation)
+	relation := Relation{own_id, userid}
+	result := model.DB.Table("user_relations").Find(relation)
 	if result.Error == nil {
 		return true
 	} else {

@@ -21,3 +21,10 @@ func (u Video) AddVideo(userInfoId int64, playUrl string, coverUrl string) error
 	})
 	return result.Error
 }
+
+func (Video) FindVideoListByUserInfoId(userInfoId int64) (*[]model.Video, error) {
+	videoList := []model.Video{}
+
+	result := model.DB.Where("user_info_id = ?", userInfoId).Find(&videoList)
+	return &videoList, result.Error
+}
