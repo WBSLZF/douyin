@@ -50,6 +50,45 @@
                 }
             }
         },
+        "/douyin/publish/list/": {
+            "get": {
+                "description": "首先得鉴权，判断token和user_id是否同一个，是否伪造token，其次返回该用户的数据",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频"
+                ],
+                "summary": "查看用户所有投稿的视频",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户鉴权token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户的id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.VideoListResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/douyin/user/login/": {
             "post": {
                 "description": "用户登录功能，判断密码是否正确",
@@ -147,6 +186,20 @@
                 }
             }
         },
+        "controller.VideoListResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "$ref": "#/definitions/model.Response"
+                },
+                "video_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Video"
+                    }
+                }
+            }
+        },
         "model.Response": {
             "type": "object",
             "properties": {
@@ -154,6 +207,60 @@
                     "type": "integer"
                 },
                 "status_msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.UserInfo": {
+            "type": "object",
+            "properties": {
+                "follow_count": {
+                    "type": "integer"
+                },
+                "follower_count": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_follow": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Video": {
+            "type": "object",
+            "properties": {
+                "author": {
+                    "description": "视频作者的相关信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.UserInfo"
+                        }
+                    ]
+                },
+                "comment_count": {
+                    "type": "integer"
+                },
+                "cover_url": {
+                    "type": "string"
+                },
+                "favorite_count": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "is_favorite": {
+                    "type": "boolean"
+                },
+                "play_url": {
+                    "type": "string"
+                },
+                "title": {
                     "type": "string"
                 }
             }
