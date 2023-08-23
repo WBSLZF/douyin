@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"path/filepath"
+	"strconv"
 
 	"github.com/RaymondCode/simple-demo/model"
 	"github.com/RaymondCode/simple-demo/service"
@@ -13,7 +14,7 @@ import (
 
 type VideoListResponse struct {
 	Response  model.Response
-	VideoList []Video `json:"video_list"`
+	VideoList *[]model.Video `json:"video_list"`
 }
 
 // Publish check token then save upload file to public directory
@@ -88,12 +89,51 @@ func Publish(c *gin.Context) {
 	})
 }
 
-// PublishList all users have same publish video list
+// PublishList 用户发布列表
+// @Summary 查看用户所有投稿的视频
+// @Description 首先得鉴权，判断token和user_id是否同一个，是否伪造token，其次返回该用户的数据
+// @Tags 视频
+// @Accept application/json
+// @Produce application/json
+// @Param token query string true "用户鉴权token"
+// @Param user_id query string true "用户的id"
+// @Success 200 {object} VideoListResponse
+// @Router /douyin/publish/list/ [GET]
 func PublishList(c *gin.Context) {
+	user_id, err := strconv.ParseInt(c.Query("user_id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, VideoListResponse{
+			Response: model.Response{
+				StatusCode: 1,
+				StatusMsg:  err.Error(),
+			},
+		})
+		return
+	}
+	token_user_id, _ := c.Get("user_id")
+	if user_id != token_user_id {
+		c.JSON(http.StatusOK, VideoListResponse{
+			Response: model.Response{
+				StatusCode: 1,
+				StatusMsg:  "token有问题",
+			},
+		})
+		return
+	}
+	videoList, err := service.VideoList{}.ListVideo(user_id)
+	if err != nil {
+		c.JSON(http.StatusOK, VideoListResponse{
+			Response: model.Response{
+				StatusCode: 1,
+				StatusMsg:  err.Error(),
+			},
+		})
+		return
+	}
 	c.JSON(http.StatusOK, VideoListResponse{
 		Response: model.Response{
 			StatusCode: 0,
 		},
-		VideoList: DemoVideos,
+		VideoList: videoList,
 	})
 }

@@ -30,6 +30,7 @@ func init() {
 	DB, err = gorm.Open(mysql.Open(dns), &gorm.Config{
 		QueryFields: true, //打印sql
 	})
+	DB := DB.Debug()
 	if err != nil {
 		fmt.Println(err)
 	}
