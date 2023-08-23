@@ -10,11 +10,67 @@ definitions:
       user_id:
         type: integer
     type: object
+  controller.VideoListResponse:
+    properties:
+      response:
+        $ref: '#/definitions/model.Response'
+      video_list:
+        items:
+          $ref: '#/definitions/model.Video'
+        type: array
+    type: object
   model.Response:
     properties:
       status_code:
         type: integer
       status_msg:
+        type: string
+    type: object
+  model.UserInfo:
+    properties:
+      avatar:
+        description: 用户头像
+        type: string
+      background_image:
+        description: 用户背景
+        type: string
+      favorite_count:
+        type: integer
+      follow_count:
+        type: integer
+      follower_count:
+        type: integer
+      id:
+        type: integer
+      is_follow:
+        type: boolean
+      name:
+        type: string
+      total_favorited:
+        type: string
+      work_count:
+        description: 用户作品数量
+        type: integer
+    type: object
+  model.Video:
+    properties:
+      author:
+        allOf:
+        - $ref: '#/definitions/model.UserInfo'
+        description: 视频作者的相关信息
+      comment_count:
+        type: integer
+      cover_url:
+        type: string
+      favorite_count:
+        type: integer
+      id:
+        type: integer
+      is_favorite:
+        type: boolean
+      play_url:
+        type: string
+      title:
         type: string
     type: object
 info:
@@ -49,6 +105,32 @@ paths:
           schema:
             $ref: '#/definitions/model.Response'
       summary: 用户投稿
+      tags:
+      - 视频
+  /douyin/publish/list/:
+    get:
+      consumes:
+      - application/json
+      description: 首先得鉴权，判断token和user_id是否同一个，是否伪造token，其次返回该用户的数据
+      parameters:
+      - description: 用户鉴权token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 用户的id
+        in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.VideoListResponse'
+      summary: 查看用户所有投稿的视频
       tags:
       - 视频
   /douyin/user/login/:

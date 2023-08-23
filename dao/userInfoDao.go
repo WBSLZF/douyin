@@ -20,15 +20,34 @@ func (u UserInfoDao) IsUserInfoExistByName(name string) bool {
 	return userInfo.Name != ""
 }
 
-func (u *UserInfoDao) QueryUserInfoById(userId int64, userinfo *model.UserInfo) error {
-	if userinfo == nil {
-		return nil
-	}
-	//DB.Where("id=?",userId).First(userinfo)
-	model.DB.Where("id=?", userId).Select([]string{"id", "name", "follow_count", "follower_count", "is_follow"}).First(userinfo)
-	//id为零值，说明sql执行失败
-	if userinfo.Id == 0 {
-		return errors.New("该用户不存在")
-	}
-	return nil
+
+// 根据id查找基本信息
+func (u UserInfoDao) GetInfoById(userid int64) model.UserInfo {
+	userinfo := model.UserInfo{}
+	model.DB.Where(userid).Find(&userinfo)
+
+	return userinfo
 }
+
+// 更新用户
+func (u UserInfoDao) UpdateUserInfo(userInfo model.UserInfo) error {
+	return model.DB.Save(&userInfo).Error
+}
+
+type Relation struct {
+	UserInfoId int64 `json:"user_info_id"`
+	FollowId   int64 `json:"follow_id"`
+}
+
+// 根据两个id判断是否follow
+func (u UserInfoDao) IsFollow(own_id, userid int64) bool {
+	relation := Relation{own_id, userid}
+	result := model.DB.Table("user_relations").Find(relation)
+	if result.Error == nil {
+		return true
+	} else {
+		return false
+	}
+}
+
+
