@@ -13,7 +13,7 @@ import (
 )
 
 type VideoListResponse struct {
-	Response  model.Response
+	model.Response
 	VideoList *[]model.Video `json:"video_list"`
 }
 

@@ -21,7 +21,7 @@ func ReleaseToken(userLogin model.UserLogin) (string, error) {
 	claims := Claims{
 		UserId: userLogin.UserInfoId,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(0 * time.Hour).Unix(), // token的有效时间为24小时
+			ExpiresAt: time.Now().Add(24 * time.Hour).Unix(), // token的有效时间为24小时
 			IssuedAt:  time.Now().Unix(),
 		},
 	}

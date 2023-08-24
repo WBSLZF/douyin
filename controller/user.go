@@ -96,7 +96,7 @@ func UserInfo(c *gin.Context) {
 	user, err := service.Userinfo{}.SelectUserInfoById(userId, ownId)
 	if err != nil {
 		c.JSON(http.StatusOK, UserinfoResponse{
-			Response: model.Response{StatusCode: 0, StatusMsg: err.Error()},
+			Response: model.Response{StatusCode: 1, StatusMsg: err.Error()},
 		})
 	}
 

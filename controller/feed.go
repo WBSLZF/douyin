@@ -34,6 +34,7 @@ func Feed(c *gin.Context) {
 	err := p.Do(uid)
 	if err != nil {
 		p.FeedVideoListError(err.Error())
+		return
 	}
 }
 

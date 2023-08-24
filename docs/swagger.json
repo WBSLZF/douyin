@@ -4,6 +4,45 @@
         "contact": {}
     },
     "paths": {
+        "/douyin/favorite/list/": {
+            "get": {
+                "description": "查看用户所有点赞的视频",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频"
+                ],
+                "summary": "查看用户所有点赞的视频",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户鉴权token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户的id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/favorite.FavoriteListResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/douyin/publish/action/": {
             "post": {
                 "description": "投稿首先得鉴权，其次获取用户的上传视频，自动获取封面，上传到云存储，并添加到数据库中",
@@ -189,8 +228,28 @@
         "controller.VideoListResponse": {
             "type": "object",
             "properties": {
-                "response": {
-                    "$ref": "#/definitions/model.Response"
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                },
+                "video_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Video"
+                    }
+                }
+            }
+        },
+        "favorite.FavoriteListResponse": {
+            "type": "object",
+            "properties": {
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
                 },
                 "video_list": {
                     "type": "array",
