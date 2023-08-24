@@ -2,48 +2,113 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/RaymondCode/simple-demo/model"
+	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
 )
 
 type CommentListResponse struct {
-	Response    model.Response
-	CommentList []Comment `json:"comment_list,omitempty"`
+	model.Response
+	CommentList []*model.Comment `json:"comment_list,omitempty"`
 }
 
 type CommentActionResponse struct {
-	Response model.Response
-	Comment  Comment `json:"comment,omitempty"`
+	model.Response
+	Comment model.Comment `json:"comment,omitempty"`
 }
 
 // CommentAction no practical effect, just check if token is valid
 func CommentAction(c *gin.Context) {
 	token := c.Query("token")
-	actionType := c.Query("action_type")
-	// 这是判断用户是否登录了吗？
+	actionType, _ := strconv.ParseInt(c.Query("action_type"), 10, 64)
+	videoid, _ := strconv.ParseInt(c.Query("video_id"), 10, 64)
+	commentId, _ := strconv.ParseInt(c.Query("comment_id"), 10, 64)
 	if user, exist := usersLoginInfo[token]; exist {
-		if actionType == "1" {
+		if actionType == 1 || actionType == 2 {
 			text := c.Query("comment_text")
-			c.JSON(http.StatusOK, CommentActionResponse{Response: model.Response{StatusCode: 0},
-				Comment: Comment{
-					Id:         1,
-					User:       user,
-					Content:    text,
-					CreateDate: "05-01",
-				}})
+			comment, err := CommentActionDo(c, videoid, user, commentId, text, actionType)
+			if err == nil {
+				commentActionOK(c, comment)
+				return
+			}
+		}
+	} else {
+		commentActionError(c, "用户解析失败")
+	}
+}
+
+func CommentActionDo(c *gin.Context, vid int64, user User, commentId int64, text string, actionType int64) (comment model.Comment, error error) {
+	comment, err := service.CommentAction(vid, user.Id, commentId, text, actionType)
+	if err != nil {
+		if actionType == 1 {
+			commentActionError(c, "评论失败")
+		} else {
+			commentActionError(c, "删除评论失败")
+		}
+		return comment, err
+	}
+	return comment, nil
+}
+
+func CommentList(c *gin.Context) {
+	token := c.Query("token")
+	videoid, _ := strconv.ParseInt(c.Query("video_id"), 10, 64)
+	if _, exist := usersLoginInfo[token]; exist {
+		commentlist, err := CommentListDo(c, videoid)
+		if err == nil {
+			commentListOK(c, commentlist)
 			return
 		}
-		c.JSON(http.StatusOK, model.Response{StatusCode: 0})
 	} else {
-		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
+		commentListError(c, "用户解析失败")
 	}
 }
 
 // CommentList all videos have same demo comment list
-func CommentList(c *gin.Context) {
+func CommentListDo(c *gin.Context, vid int64) (commentList []*model.Comment, error error) {
+	commentList, err := service.CommentList(vid)
+	if err != nil {
+		commentListError(c, "评论查询失败")
+		return commentList, err
+	}
+	return commentList, nil
+}
+
+func commentActionOK(c *gin.Context, comment model.Comment) {
+	c.JSON(http.StatusOK, CommentActionResponse{
+		Response: model.Response{StatusCode: 0},
+		Comment: model.Comment{
+			Id:         comment.Id,
+			User:       comment.User,
+			Content:    comment.Content,
+			CreateDate: comment.CreateDate,
+		},
+	})
+}
+
+func commentActionError(c *gin.Context, msg string) {
+	c.JSON(http.StatusOK, FavoriteActionResponse{
+		Response: model.Response{
+			StatusCode: 1,
+			StatusMsg:  msg,
+		},
+	})
+}
+
+func commentListOK(c *gin.Context, commentlist []*model.Comment) {
 	c.JSON(http.StatusOK, CommentListResponse{
 		Response:    model.Response{StatusCode: 0},
-		CommentList: DemoComments,
+		CommentList: commentlist,
+	})
+}
+
+func commentListError(c *gin.Context, msg string) {
+	c.JSON(http.StatusOK, FavoriteListResponse{
+		Response: model.Response{
+			StatusCode: 1,
+			StatusMsg:  msg,
+		},
 	})
 }
