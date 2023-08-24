@@ -24,11 +24,18 @@ func CommentAction(c *gin.Context) {
 	token := c.Query("token")
 	actionType, _ := strconv.ParseInt(c.Query("action_type"), 10, 64)
 	videoid, _ := strconv.ParseInt(c.Query("video_id"), 10, 64)
-	commentId, _ := strconv.ParseInt(c.Query("comment_id"), 10, 64)
+
 	if user, exist := usersLoginInfo[token]; exist {
-		if actionType == 1 || actionType == 2 {
+		if actionType == 1 {
 			text := c.Query("comment_text")
-			comment, err := CommentActionDo(c, videoid, user, commentId, text, actionType)
+			comment, err := CommentActionAdd(c, videoid, user, text)
+			if err == nil {
+				commentActionOK(c, comment)
+				return
+			}
+		} else if actionType == 2 {
+			commentId, _ := strconv.ParseInt(c.Query("comment_id"), 10, 64)
+			comment, err := CommentActionDel(c, videoid, user, commentId)
 			if err == nil {
 				commentActionOK(c, comment)
 				return
@@ -39,14 +46,19 @@ func CommentAction(c *gin.Context) {
 	}
 }
 
-func CommentActionDo(c *gin.Context, vid int64, user User, commentId int64, text string, actionType int64) (comment model.Comment, error error) {
-	comment, err := service.CommentAction(vid, user.Id, commentId, text, actionType)
+func CommentActionAdd(c *gin.Context, vid int64, user User, text string) (comment model.Comment, error error) {
+	comment, err := service.CommentAdd(vid, user.Id, text)
 	if err != nil {
-		if actionType == 1 {
-			commentActionError(c, "评论失败")
-		} else {
-			commentActionError(c, "删除评论失败")
-		}
+		commentActionError(c, "评论失败")
+		return comment, err
+	}
+	return comment, nil
+}
+
+func CommentActionDel(c *gin.Context, vid int64, user User, commentId int64) (comment model.Comment, error error) {
+	comment, err := service.CommentDel(vid, user.Id, commentId)
+	if err != nil {
+		commentActionError(c, "删除评论失败")
 		return comment, err
 	}
 	return comment, nil

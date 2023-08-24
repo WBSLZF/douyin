@@ -17,28 +17,37 @@ type Comment struct {
 	comment *model.Comment
 }
 
-func CommentAction(vid int64, uid int64, commentId int64, text string, actionType int64) (comment model.Comment, error error) {
-	return Comment{userId: uid, videoId: vid, commentId: commentId, commentText: text, actionType: actionType}.CommentActionDo()
+func CommentAdd(vid int64, uid int64, text string) (comment model.Comment, error error) {
+	return Comment{userId: uid, videoId: vid, commentText: text}.CommentAddDo()
 }
 
-func (com Comment) CommentActionDo() (comment model.Comment, error error) {
+func CommentDel(vid int64, uid int64, commentId int64) (comment model.Comment, error error) {
+	return Comment{userId: uid, videoId: vid, commentId: commentId}.CommentDelDo()
+}
+
+func (com Comment) CommentAddDo() (comment model.Comment, error error) {
 	if com.videoId == 0 {
 		return comment, errors.New("视频消失不见了")
 	}
-	if com.actionType == 1 {
-		comment := model.Comment{UserInfoId: com.userId, VideoId: com.videoId, Content: com.commentText}
-		err := dao.CommentActionY(&comment)
-		if err != nil {
-			return comment, errors.New("评论失败")
-		}
-		return comment, nil
+	comment = model.Comment{UserInfoId: com.userId, VideoId: com.videoId, Content: com.commentText}
+	err := dao.CommentAdd(&comment)
+	if err != nil {
+		return comment, errors.New("评论失败")
 	}
+	return comment, nil
+}
 
-	if com.actionType == 2 {
-		err := dao.CommentActionN(com.commentId, com.videoId)
-		if err != nil {
-			return comment, errors.New("删除评论失败")
-		}
+func (com Comment) CommentDelDo() (comment model.Comment, error error) {
+	if com.videoId == 0 {
+		return comment, errors.New("视频消失不见了")
+	}
+	err := dao.QueryCommentById(com.commentId, &comment)
+	if err != nil {
+		return comment, errors.New("评论不见了")
+	}
+	err = dao.CommentDel(com.commentId, com.videoId)
+	if err != nil {
+		return comment, errors.New("删除评论失败")
 	}
 	return comment, nil
 }
@@ -60,41 +69,3 @@ func CommentList(vid int64) (commentlist []*model.Comment, error error) {
 	}
 	return comments.Comments, nil
 }
-
-// type CommList struct {
-// 	Comments []*model.Comment `json:"video_list"`
-// }
-
-// type QueryCommentList struct {
-// 	userId    int64
-// 	videos    []*model.Video
-// 	videoList *FavorList
-// }
-
-// func CommentList(uid int64) (*CommList, error) {
-// 	if uid == 0 {
-// 		return nil, errors.New("用户不存在")
-// 	}
-// 	var q = QueryCommentList{userId: uid}
-// 	return q.getCommentList()
-// }
-
-// func (q *QueryCommList) getCommentList() (*CommList, error) {
-// 	err := dao.CommentList(q.userId, &q.videos)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	videodao := dao.VideoDAO{}
-// 	//填充信息(Author和IsFavorite字段，由于是点赞列表，故所有的都是点赞状态
-// 	for i := range q.videos {
-// 		//作者信息查询
-// 		var userInfo model.UserInfo
-// 		err = videodao.QueryUserInfoById(q.videos[i].UserInfoId, &userInfo)
-// 		if err == nil { //若查询未出错则更新，否则不更新作者信息
-// 			q.videos[i].Author = userInfo
-// 		}
-// 		q.videos[i].IsFavorite = true
-// 	}
-// 	q.videoList = &FavorList{Videos: q.videos}
-// 	return q.CommList, nil
-// }
