@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -10,26 +11,25 @@ import (
 )
 
 type FavoriteActionResponse struct {
-	Response model.Response
+	model.Response
 }
 
 // FavoriteAction no practical effect, just check if token is valid
 func FavoriteAction(c *gin.Context) {
-	token := c.Query("token")
-
-	if _, exist := usersLoginInfo[token]; exist {
-		var uid int64 = 0
-		id, err := checkToken(token)
-		if err != nil {
-			favoriteActionError(c, err.Error())
-			return
-		}
-		if id != -1 {
-			uid = id
-			vid, _ := strconv.ParseInt(c.Query("video_id"), 10, 64)
-			actionType, _ := strconv.ParseInt(c.Query("action_type"), 10, 64)
-			FavoriteActionDo(c, vid, uid, actionType)
-		}
+	var uid int64
+	id, flag := c.Get("user_id")
+	fmt.Println("user_id", id)
+	if !flag {
+		favoriteActionError(c, "用户不存在")
+		return
+	}
+	fmt.Println("user_id", id)
+	if id != -1 {
+		uid = id.(int64)
+		vid, _ := strconv.ParseInt(c.Query("video_id"), 10, 64)
+		actionType, _ := strconv.ParseInt(c.Query("action_type"), 10, 64)
+		FavoriteActionDo(c, vid, uid, actionType)
+		return
 	}
 	favoriteActionError(c, "用户不存在")
 }

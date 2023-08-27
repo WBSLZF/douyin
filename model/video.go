@@ -9,7 +9,7 @@ type Video struct {
 	CoverUrl      string      `json:"cover_url,omitempty"`
 	FavoriteCount int64       `json:"favorite_count,omitempty"`
 	CommentCount  int64       `json:"comment_count,omitempty"`
-	IsFavorite    bool        `json:"is_favorite,omitempty"`
+	IsFavorite    bool        `json:"is_favorite,omitempty" gorm:"-"`
 	Title         string      `json:"title,omitempty"`
 	Comments      []*Comment  `json:"-"`                                //视频下有多个评论 一对多
 	Users         []*UserInfo `json:"-" gorm:"many2many:favor_videos;"` //用户与视频 多对多

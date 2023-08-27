@@ -2,6 +2,7 @@ package controller
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -51,7 +52,9 @@ func checkToken(token string) (id int64, error error) {
 
 // Do 视频流推送处理
 func (p *ProxyFeedVideoList) Do(id int64) error {
-	rawTimestamp := p.Query("latest_time")
+	fmt.Println("---------------------------------------")
+	fmt.Println("user_id", id)
+	rawTimestamp := "" //p.Query("latest_time")
 	var latestTime time.Time
 	intTime, err := strconv.ParseInt(rawTimestamp, 10, 64)
 	if err == nil {
