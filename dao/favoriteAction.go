@@ -8,7 +8,7 @@ import (
 )
 
 func FavoriteActionY(vid int64, uid int64) error {
-	fmt.Println("调用FavoriteActionY", vid, " ", uid)
+
 	return model.DB.Transaction(func(tx *gorm.DB) error {
 		if err := tx.Exec("UPDATE videos SET favorite_count=favorite_count+1 WHERE id = ?", vid).Error; err != nil {
 			fmt.Println("err")
@@ -23,7 +23,6 @@ func FavoriteActionY(vid int64, uid int64) error {
 }
 
 func FavoriteActionN(vid int64, uid int64) error {
-	fmt.Println("调用FavoriteActionN", vid, " ", uid)
 	return model.DB.Transaction(func(tx *gorm.DB) error {
 		//执行-1之前需要先判断是否合法（不能被减少为负数
 		if err := tx.Exec("UPDATE videos SET favorite_count=favorite_count-1 WHERE id = ? AND favorite_count>0", vid).Error; err != nil {

@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -15,15 +14,23 @@ type FavoriteActionResponse struct {
 }
 
 // FavoriteAction no practical effect, just check if token is valid
+// FavoriteAction 用户点赞
+// @Summary 用户点赞
+// @Description 用户点赞功能，当用户点赞时小红心会点亮，作品点赞数量会+1,点赞列表会多一条记录，取消点赞则反之
+// @Tags 互动接口
+// @Accept application/json
+// @Produce application/json
+// @Param token query string true "用户鉴权token"
+// @Param action_type query string true "点赞标志 1-点赞 2-取消点赞"
+// @Success 200 {object} FavoriteActionResponse
+// @Router /douyin/favorite/action/ [post]
 func FavoriteAction(c *gin.Context) {
 	var uid int64
 	id, flag := c.Get("user_id")
-	fmt.Println("user_id", id)
 	if !flag {
 		favoriteActionError(c, "用户不存在")
 		return
 	}
-	fmt.Println("user_id", id)
 	if id != -1 {
 		uid = id.(int64)
 		vid, _ := strconv.ParseInt(c.Query("video_id"), 10, 64)
@@ -77,6 +84,16 @@ type FavoriteListResponse struct {
 	Videos   []*model.Video `json:"video_list,omitempty"`
 }
 
+// FavoriteAction 用户喜欢列表
+// @Summary 用户喜欢列表
+// @Description 查看用户的所有点赞视频
+// @Tags 互动接口
+// @Accept application/json
+// @Produce application/json
+// @Param token query string true "用户鉴权token"
+// @Param user_id query string true "用户id"GET
+// @Success 200 {object} FavoriteListResponse
+// @Router /douyin/favorite/list/ [GET]
 func FavoriteList(c *gin.Context) {
 	token := c.Query("token")
 

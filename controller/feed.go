@@ -18,6 +18,16 @@ type FeedResponse struct {
 	*service.FeedVideoList
 }
 
+// Feed 视频流
+// @Summary 视频流接口，主页的视频流
+// @Description 不限制登录状态，返回按投稿时间倒序的视频列表，视频数由服务端控制，单次最多30个
+// @Tags 视频接口
+// @Accept application/json
+// @Produce application/json
+// @Param latest_time query string true "可选参数，限制返回视频的最新投稿时间戳，精确到秒，不填表示当前时间"
+// @Param token query string true "用户鉴权token"
+// @Success 200 {object} FeedResponse
+// @Router /douyin/feed/ [GET]
 func Feed(c *gin.Context) {
 	var uid int64 = 0
 	p := NewProxyFeedVideoList(c)

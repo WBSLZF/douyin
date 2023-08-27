@@ -16,9 +16,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/douyin/favorite/list/": {
-            "get": {
-                "description": "查看用户所有点赞的视频",
+        "/douyin/favorite/action/": {
+            "post": {
+                "description": "用户点赞功能，当用户点赞时小红心会点亮，作品点赞数量会+1,点赞列表会多一条记录，取消点赞则反之",
                 "consumes": [
                     "application/json"
                 ],
@@ -26,9 +26,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "视频"
+                    "互动接口"
                 ],
-                "summary": "查看用户所有点赞的视频",
+                "summary": "用户点赞",
                 "parameters": [
                     {
                         "type": "string",
@@ -39,7 +39,46 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "用户的id",
+                        "description": "点赞标志 1-点赞 2-取消点赞",
+                        "name": "action_type",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.FavoriteActionResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/douyin/favorite/list/": {
+            "get": {
+                "description": "查看用户的所有点赞视频",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "互动接口"
+                ],
+                "summary": "用户喜欢列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户鉴权token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
                         "name": "user_id",
                         "in": "query",
                         "required": true
@@ -49,7 +88,46 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/favorite.FavoriteListResponse"
+                            "$ref": "#/definitions/controller.FavoriteListResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/douyin/feed/": {
+            "get": {
+                "description": "不限制登录状态，返回按投稿时间倒序的视频列表，视频数由服务端控制，单次最多30个",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频接口"
+                ],
+                "summary": "视频流接口，主页的视频流",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "可选参数，限制返回视频的最新投稿时间戳，精确到秒，不填表示当前时间",
+                        "name": "latest_time",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户鉴权token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.FeedResponse"
                         }
                     }
                 }
@@ -65,7 +143,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "视频"
+                    "视频接口"
                 ],
                 "summary": "用户投稿",
                 "parameters": [
@@ -111,7 +189,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "视频"
+                    "视频接口"
                 ],
                 "summary": "查看用户所有投稿的视频",
                 "parameters": [
@@ -140,6 +218,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/douyin/user/": {
+            "get": {
+                "description": "获取用户的 id、昵称，如果实现社交部分的功能，还会返回关注数和粉丝数",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户接口"
+                ],
+                "summary": "获取用户的基本信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户鉴权token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.UserinfoResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/douyin/user/login/": {
             "post": {
                 "description": "用户登录功能，判断密码是否正确",
@@ -150,7 +267,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "用户"
+                    "用户接口"
                 ],
                 "summary": "用户登录",
                 "parameters": [
@@ -220,6 +337,51 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controller.FavoriteActionResponse": {
+            "type": "object",
+            "properties": {
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.FavoriteListResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "$ref": "#/definitions/model.Response"
+                },
+                "video_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Video"
+                    }
+                }
+            }
+        },
+        "controller.FeedResponse": {
+            "type": "object",
+            "properties": {
+                "next_time": {
+                    "type": "integer"
+                },
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                },
+                "video_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Video"
+                    }
+                }
+            }
+        },
         "controller.UserLoginResponse": {
             "type": "object",
             "properties": {
@@ -237,7 +399,7 @@ const docTemplate = `{
                 }
             }
         },
-        "controller.VideoListResponse": {
+        "controller.UserinfoResponse": {
             "type": "object",
             "properties": {
                 "status_code": {
@@ -246,15 +408,12 @@ const docTemplate = `{
                 "status_msg": {
                     "type": "string"
                 },
-                "video_list": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Video"
-                    }
+                "user": {
+                    "$ref": "#/definitions/model.UserInfo"
                 }
             }
         },
-        "favorite.FavoriteListResponse": {
+        "controller.VideoListResponse": {
             "type": "object",
             "properties": {
                 "status_code": {

@@ -2,13 +2,11 @@ package service
 
 import (
 	"errors"
-	"fmt"
 
 	"github.com/RaymondCode/simple-demo/dao"
 )
 
 func FavoriteAction(vid int64, uid int64, actionType int64) error {
-	fmt.Println("进入FavoriteAction", uid, " ", vid)
 	if vid == 0 {
 		return errors.New("视频消失不见了")
 	}

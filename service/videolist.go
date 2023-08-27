@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/RaymondCode/simple-demo/dao"
@@ -94,7 +93,6 @@ func FillVideoListFields(userId int64, videos *[]*model.Video) (*time.Time, erro
 		if userId > 0 {
 			userInfo.IsFollow = videodao.GetUserRelation(userId, userInfo.Id)              // 根据作者id和用户id 查看作者是否被follow
 			(*videos)[i].IsFavorite = videodao.GetVideoFavorState(userId, (*videos)[i].Id) //填充有登录信息的点赞状态 登录的人可以看到自己是否点赞了，因为如果点赞了会显示红心
-			fmt.Println((*videos)[i].IsFavorite)
 		}
 	}
 	return &latestTime, nil
