@@ -16,6 +16,103 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/douyin/comment/action/": {
+            "post": {
+                "description": "已经登录的用户在视频下方进行评论",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "互动接口"
+                ],
+                "summary": "登录用户对视频进行评论",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户鉴权token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "视频id",
+                        "name": "video_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "1-发布评论 2-删除评论",
+                        "name": "action_type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户填写的评论内容，在action_type=1的时候使用",
+                        "name": "comment_text",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "要删除的评论id，在action_type=2的时候使用",
+                        "name": "comment_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CommentActionResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/douyin/comment/list/": {
+            "get": {
+                "description": "查看视频的所有评论，按发布时间倒序,并不需要限制用户的登录状态吧",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "互动接口"
+                ],
+                "summary": "查看视频的所有评论，按发布时间倒序",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户鉴权token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "视频id",
+                        "name": "video_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CommentListResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/douyin/favorite/action/": {
             "post": {
                 "description": "用户点赞功能，当用户点赞时小红心会点亮，作品点赞数量会+1,点赞列表会多一条记录，取消点赞则反之",
@@ -336,6 +433,37 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controller.CommentActionResponse": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "$ref": "#/definitions/model.Comment"
+                },
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.CommentListResponse": {
+            "type": "object",
+            "properties": {
+                "comment_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Comment"
+                    }
+                },
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                }
+            }
+        },
         "controller.FavoriteActionResponse": {
             "type": "object",
             "properties": {
@@ -426,6 +554,28 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.Video"
                     }
+                }
+            }
+        },
+        "model.Comment": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "create_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "user": {
+                    "description": "评论用户作者的相关信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.UserInfo"
+                        }
+                    ]
                 }
             }
         },

@@ -7,13 +7,16 @@ import (
 	"gorm.io/gorm"
 )
 
-func CommentAdd(comment *model.Comment) error {
+type Comment struct {
+}
+
+func (Comment) CommentAdd(comment *model.Comment) error {
 	if comment == nil {
 		return errors.New("AddCommentAndUpdateCount comment空指针")
 	}
 	return model.DB.Transaction(func(tx *gorm.DB) error {
 		//添加评论数据
-		if err := tx.Exec("INSERT INTO `comments` (`content`, `video_id`) VALUES (?,?)", comment.Content, comment.VideoId).Error; err != nil {
+		if err := tx.Create(comment).Error; err != nil {
 			return err
 		}
 		//增加count
@@ -25,7 +28,7 @@ func CommentAdd(comment *model.Comment) error {
 	})
 }
 
-func CommentDel(commentId, videoId int64) error {
+func (Comment) CommentDel(commentId, videoId int64) error {
 	//执行事务
 	return model.DB.Transaction(func(tx *gorm.DB) error {
 		//删除评论
@@ -41,18 +44,18 @@ func CommentDel(commentId, videoId int64) error {
 	})
 }
 
-func QueryCommentById(id int64, comment *model.Comment) error {
+func (Comment) QueryCommentById(id int64, comment *model.Comment) error {
 	if comment == nil {
 		return errors.New("QueryCommentById comment 空指针")
 	}
 	return model.DB.Where("id=?", id).First(comment).Error
 }
 
-func CommentList(videoid int64, Comments *[]*model.Comment) (error error) {
+func (Comment) CommentList(videoid int64, Comments *[]*model.Comment) (error error) {
 	if Comments == nil {
 		return errors.New("QueryCommentListByVideoId comments空指针")
 	}
-	if err := model.DB.Model(&model.Comment{}).Where("video_id=?", videoid).Find(Comments).Error; err != nil {
+	if err := model.DB.Raw("select * from comments where video_id = ? ORDER BY create_date DESC", videoid).Scan(Comments).Error; err != nil {
 		return err
 	}
 	return nil

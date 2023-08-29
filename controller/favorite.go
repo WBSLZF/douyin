@@ -106,26 +106,6 @@ func FavoriteList(c *gin.Context) {
 		return
 	}
 	favoriteListOK(c, "查询成功", videoList)
-	// token := c.Query("token")
-
-	// if _, exist := usersLoginInfo[token]; exist {
-	// 	var uid int64 = 0
-	// 	id, err := checkToken(token)
-	// 	if err != nil {
-	// 		favoriteActionError(c, err.Error())
-	// 		return
-	// 	}
-	// 	if id != -1 {
-	// 		uid = id
-	// 		videoList, err := FavoriteListDo(c, uid)
-	// 		if err != nil {
-	// 			favoriteListError(c, "查询失败")
-	// 			return
-	// 		}
-	// 		favoriteListOK(c, "成功查询到喜爱视频列表", videoList)
-	// 	}
-	// }
-	// favoriteListError(c, "用户不存在")
 }
 
 func FavoriteListDo(c *gin.Context, uid int64) (videos []*model.Video, error error) {

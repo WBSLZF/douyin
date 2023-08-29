@@ -2,9 +2,14 @@ package service
 
 import (
 	"errors"
+	"time"
 
 	"github.com/RaymondCode/simple-demo/dao"
 	"github.com/RaymondCode/simple-demo/model"
+)
+
+const (
+	timeFormat = "2006-01-02"
 )
 
 type Comment struct {
@@ -29,8 +34,8 @@ func (com Comment) CommentAddDo() (comment model.Comment, error error) {
 	if com.videoId == 0 {
 		return comment, errors.New("视频消失不见了")
 	}
-	comment = model.Comment{UserInfoId: com.userId, VideoId: com.videoId, Content: com.commentText}
-	err := dao.CommentAdd(&comment)
+	comment = model.Comment{UserInfoId: com.userId, VideoId: com.videoId, Content: com.commentText, CreateDate: time.Now().Format(timeFormat)}
+	err := dao.Comment{}.CommentAdd(&comment)
 	if err != nil {
 		return comment, errors.New("评论失败")
 	}
@@ -41,11 +46,11 @@ func (com Comment) CommentDelDo() (comment model.Comment, error error) {
 	if com.videoId == 0 {
 		return comment, errors.New("视频消失不见了")
 	}
-	err := dao.QueryCommentById(com.commentId, &comment)
+	err := dao.Comment{}.QueryCommentById(com.commentId, &comment)
 	if err != nil {
 		return comment, errors.New("评论不见了")
 	}
-	err = dao.CommentDel(com.commentId, com.videoId)
+	err = dao.Comment{}.CommentDel(com.commentId, com.videoId)
 	if err != nil {
 		return comment, errors.New("删除评论失败")
 	}
@@ -63,9 +68,10 @@ func CommentList(vid int64) (commentlist []*model.Comment, error error) {
 		return commentlist, errors.New("视频不存在")
 	}
 	comments := CommList{videoId: vid}
-	err := dao.CommentList(vid, &comments.Comments)
+	err := dao.Comment{}.CommentList(vid, &comments.Comments)
 	if err != nil {
 		return comments.Comments, err
 	}
+
 	return comments.Comments, nil
 }
