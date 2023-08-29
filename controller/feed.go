@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -33,11 +32,7 @@ func Feed(c *gin.Context) {
 	p := NewProxyFeedVideoList(c)
 	token, ok := c.GetQuery("token")
 	if ok {
-		id, err := checkToken(token)
-		if err != nil {
-			p.FeedVideoListError(err.Error())
-			return
-		}
+		id := checkToken(token)
 		if id != -1 {
 			uid = id
 		}
@@ -49,15 +44,15 @@ func Feed(c *gin.Context) {
 	}
 }
 
-func checkToken(token string) (id int64, error error) {
+func checkToken(token string) (id int64) {
 	if claim, ok := middleware.ParseToken(token); ok {
 		// token超时
 		if time.Now().Unix() > claim.ExpiresAt {
-			return -1, errors.New("token超时")
+			return -1
 		}
-		return claim.UserId, nil
+		return claim.UserId
 	}
-	return -1, errors.New("token不正确")
+	return -1
 }
 
 // Do 视频流推送处理
