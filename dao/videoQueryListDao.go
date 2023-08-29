@@ -17,7 +17,7 @@ func (v *VideoDAO) QueryUserInfoById(userId int64, userinfo *model.UserInfo) err
 		return nil
 	}
 	//DB.Where("id=?",userId).First(userinfo)
-	model.DB.Where("id=?", userId).Select([]string{"id", "name", "follow_count", "follower_count", "is_follow"}).First(userinfo)
+	model.DB.Where("id=?", userId).First(userinfo)
 	//id为零值，说明sql执行失败
 	if userinfo.Id == 0 {
 		return errors.New("该用户不存在")

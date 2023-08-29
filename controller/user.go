@@ -101,7 +101,7 @@ func UserInfo(c *gin.Context) {
 	userId, err := strconv.ParseInt(c.Query("user_id"), 10, 64)
 	if err != nil {
 		c.JSON(http.StatusOK, UserinfoResponse{
-			Response: model.Response{StatusCode: 1, StatusMsg: "用户id转换异常"},
+			Response: model.Response{StatusCode: 1, StatusMsg: "用户不存在"},
 		})
 	}
 	ownIdAny, token_user_id_exist := c.Get("user_id")
