@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"errors"
 	"net/http"
 	"strconv"
 	"time"
@@ -17,16 +16,22 @@ type FeedResponse struct {
 	*service.FeedVideoList
 }
 
+// Feed 视频流
+// @Summary 视频流接口，主页的视频流
+// @Description 不限制登录状态，返回按投稿时间倒序的视频列表，视频数由服务端控制，单次最多30个
+// @Tags 视频接口
+// @Accept application/json
+// @Produce application/json
+// @Param latest_time query string false "可选参数，限制返回视频的最新投稿时间戳，精确到秒，不填表示当前时间"
+// @Param token query string true "用户鉴权token"
+// @Success 200 {object} FeedResponse
+// @Router /douyin/feed/ [GET]
 func Feed(c *gin.Context) {
 	var uid int64 = 0
 	p := NewProxyFeedVideoList(c)
 	token, ok := c.GetQuery("token")
 	if ok {
-		id, err := checkToken(token)
-		if err != nil {
-			p.FeedVideoListError(err.Error())
-			return
-		}
+		id := checkToken(token)
 		if id != -1 {
 			uid = id
 		}
@@ -38,20 +43,20 @@ func Feed(c *gin.Context) {
 	}
 }
 
-func checkToken(token string) (id int64, error error) {
+func checkToken(token string) (id int64) {
 	if claim, ok := middleware.ParseToken(token); ok {
 		// token超时
 		if time.Now().Unix() > claim.ExpiresAt {
-			return -1, errors.New("token超时")
+			return -1
 		}
-		return claim.UserId, nil
+		return claim.UserId
 	}
-	return -1, errors.New("token不正确")
+	return -1
 }
 
 // Do 视频流推送处理
 func (p *ProxyFeedVideoList) Do(id int64) error {
-	rawTimestamp := p.Query("latest_time")
+	rawTimestamp := "" //p.Query("latest_time")
 	var latestTime time.Time
 	intTime, err := strconv.ParseInt(rawTimestamp, 10, 64)
 	if err == nil {

@@ -2,6 +2,7 @@ package dao
 
 import (
 	"errors"
+
 	// "sync"
 	"time"
 
@@ -16,7 +17,7 @@ func (v *VideoDAO) QueryUserInfoById(userId int64, userinfo *model.UserInfo) err
 		return nil
 	}
 	//DB.Where("id=?",userId).First(userinfo)
-	model.DB.Where("id=?", userId).Select([]string{"id", "name", "follow_count", "follower_count", "is_follow"}).First(userinfo)
+	model.DB.Where("id=?", userId).First(userinfo)
 	//id为零值，说明sql执行失败
 	if userinfo.Id == 0 {
 		return errors.New("该用户不存在")
@@ -31,7 +32,6 @@ func (v *VideoDAO) QueryVideoListByLatestTime(limit int, latestTime time.Time, v
 	}
 	return model.DB.Model(&model.Video{}).Where("create_at < ?", latestTime).
 		Order("create_at ASC").Limit(limit).
-		Select([]string{"id", "user_info_id", "play_url", "cover_url", "favorite_count", "comment_count", "is_favorite", "create_at"}).
 		Find(videoList).Error
 }
 
@@ -49,8 +49,9 @@ func (v VideoDAO) GetVideoFavorState(userId int64, videoId int64) bool {
 	if userId == 0 || videoId == 0 {
 		return false
 	}
-	if err := model.DB.Raw("SELECT COUNT(*) FROM favor_video WHERE video_id = ? AND user_info_id = ?", videoId, userId).Error; err != nil {
-		return true
+	var n int
+	if model.DB.Raw("SELECT Count(*) FROM favor_videos WHERE video_id = ? AND user_info_id = ?", videoId, userId).Scan(&n); n == 0 {
+		return false
 	}
 	return true
 }

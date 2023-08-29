@@ -16,9 +16,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/douyin/favorite/list/": {
-            "get": {
-                "description": "查看用户所有点赞的视频",
+        "/douyin/comment/action/": {
+            "post": {
+                "description": "已经登录的用户在视频下方进行评论",
                 "consumes": [
                     "application/json"
                 ],
@@ -26,9 +26,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "视频"
+                    "互动接口"
                 ],
-                "summary": "查看用户所有点赞的视频",
+                "summary": "登录用户对视频进行评论",
                 "parameters": [
                     {
                         "type": "string",
@@ -39,7 +39,143 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "用户的id",
+                        "description": "视频id",
+                        "name": "video_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "1-发布评论 2-删除评论",
+                        "name": "action_type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户填写的评论内容，在action_type=1的时候使用",
+                        "name": "comment_text",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "要删除的评论id，在action_type=2的时候使用",
+                        "name": "comment_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CommentActionResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/douyin/comment/list/": {
+            "get": {
+                "description": "查看视频的所有评论，按发布时间倒序,并不需要限制用户的登录状态吧",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "互动接口"
+                ],
+                "summary": "查看视频的所有评论，按发布时间倒序",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户鉴权token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "视频id",
+                        "name": "video_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.CommentListResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/douyin/favorite/action/": {
+            "post": {
+                "description": "用户点赞功能，当用户点赞时小红心会点亮，作品点赞数量会+1,点赞列表会多一条记录，取消点赞则反之",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "互动接口"
+                ],
+                "summary": "用户点赞",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户鉴权token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "点赞标志 1-点赞 2-取消点赞",
+                        "name": "action_type",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.FavoriteActionResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/douyin/favorite/list/": {
+            "get": {
+                "description": "查看用户的所有点赞视频",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "互动接口"
+                ],
+                "summary": "用户喜欢列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户鉴权token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户id",
                         "name": "user_id",
                         "in": "query",
                         "required": true
@@ -49,7 +185,45 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/favorite.FavoriteListResponse"
+                            "$ref": "#/definitions/controller.FavoriteListResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/douyin/feed/": {
+            "get": {
+                "description": "不限制登录状态，返回按投稿时间倒序的视频列表，视频数由服务端控制，单次最多30个",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "视频接口"
+                ],
+                "summary": "视频流接口，主页的视频流",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "可选参数，限制返回视频的最新投稿时间戳，精确到秒，不填表示当前时间",
+                        "name": "latest_time",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户鉴权token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.FeedResponse"
                         }
                     }
                 }
@@ -65,7 +239,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "视频"
+                    "视频接口"
                 ],
                 "summary": "用户投稿",
                 "parameters": [
@@ -111,7 +285,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "视频"
+                    "视频接口"
                 ],
                 "summary": "查看用户所有投稿的视频",
                 "parameters": [
@@ -140,6 +314,45 @@ const docTemplate = `{
                 }
             }
         },
+        "/douyin/user/": {
+            "get": {
+                "description": "获取用户的 id、昵称，如果实现社交部分的功能，还会返回关注数和粉丝数",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户接口"
+                ],
+                "summary": "获取用户的基本信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户id",
+                        "name": "user_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用户鉴权token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.UserinfoResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/douyin/user/login/": {
             "post": {
                 "description": "用户登录功能，判断密码是否正确",
@@ -150,7 +363,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "用户"
+                    "用户接口"
                 ],
                 "summary": "用户登录",
                 "parameters": [
@@ -220,6 +433,82 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controller.CommentActionResponse": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "$ref": "#/definitions/model.Comment"
+                },
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.CommentListResponse": {
+            "type": "object",
+            "properties": {
+                "comment_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Comment"
+                    }
+                },
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.FavoriteActionResponse": {
+            "type": "object",
+            "properties": {
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.FavoriteListResponse": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "$ref": "#/definitions/model.Response"
+                },
+                "video_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Video"
+                    }
+                }
+            }
+        },
+        "controller.FeedResponse": {
+            "type": "object",
+            "properties": {
+                "next_time": {
+                    "type": "integer"
+                },
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                },
+                "video_list": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Video"
+                    }
+                }
+            }
+        },
         "controller.UserLoginResponse": {
             "type": "object",
             "properties": {
@@ -234,6 +523,20 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "controller.UserinfoResponse": {
+            "type": "object",
+            "properties": {
+                "status_code": {
+                    "type": "integer"
+                },
+                "status_msg": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.UserInfo"
                 }
             }
         },
@@ -254,20 +557,25 @@ const docTemplate = `{
                 }
             }
         },
-        "favorite.FavoriteListResponse": {
+        "model.Comment": {
             "type": "object",
             "properties": {
-                "status_code": {
-                    "type": "integer"
-                },
-                "status_msg": {
+                "content": {
                     "type": "string"
                 },
-                "video_list": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Video"
-                    }
+                "create_date": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "user": {
+                    "description": "评论用户作者的相关信息",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/model.UserInfo"
+                        }
+                    ]
                 }
             }
         },

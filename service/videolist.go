@@ -101,7 +101,15 @@ func FillVideoListFields(userId int64, videos *[]*model.Video) (*time.Time, erro
 type VideoList struct {
 }
 
-func (v VideoList) ListVideo(user_id int64) (*[]model.Video, error) {
+func (v VideoList) ListVideo(user_id int64) ([]*model.Video, error) {
 	videoList, err := dao.Video{}.FindVideoListByUserInfoId(user_id)
+	if err != nil {
+		return nil, err
+	}
+	for i := range videoList {
+		//作者信息查询
+		userInfo := dao.UserInfoDao{}.GetInfoById(videoList[i].UserInfoId)
+		videoList[i].Author = userInfo
+	}
 	return videoList, err
 }

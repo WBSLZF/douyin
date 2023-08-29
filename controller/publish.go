@@ -14,14 +14,14 @@ import (
 
 type VideoListResponse struct {
 	model.Response
-	VideoList *[]model.Video `json:"video_list"`
+	VideoList []*model.Video `json:"video_list"`
 }
 
 // Publish check token then save upload file to public directory
 // Publish 登录用户选择视频上传
 // @Summary 用户投稿
 // @Description 投稿首先得鉴权，其次获取用户的上传视频，自动获取封面，上传到云存储，并添加到数据库中
-// @Tags 视频
+// @Tags 视频接口
 // @Accept multipart/form-data
 // @Produce application/json
 // @Param data formData file true "视频数据"
@@ -92,7 +92,7 @@ func Publish(c *gin.Context) {
 // PublishList 用户发布列表
 // @Summary 查看用户所有投稿的视频
 // @Description 首先得鉴权，判断token和user_id是否同一个，是否伪造token，其次返回该用户的数据
-// @Tags 视频
+// @Tags 视频接口
 // @Accept application/json
 // @Produce application/json
 // @Param token query string true "用户鉴权token"
@@ -110,8 +110,8 @@ func PublishList(c *gin.Context) {
 		})
 		return
 	}
-	token_user_id, _ := c.Get("user_id")
-	if user_id != token_user_id {
+	token_user_id, token_exist := c.Get("user_id")
+	if !token_exist || user_id != token_user_id {
 		c.JSON(http.StatusOK, VideoListResponse{
 			Response: model.Response{
 				StatusCode: 1,

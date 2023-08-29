@@ -59,7 +59,7 @@ func Register(c *gin.Context) {
 // Login 用户登录
 // @Summary 用户登录
 // @Description 用户登录功能，判断密码是否正确
-// @Tags 用户
+// @Tags 用户接口
 // @Accept application/json
 // @Produce application/json
 // @Param username query string true "账号"
@@ -87,10 +87,29 @@ type UserinfoResponse struct {
 	User model.UserInfo `json:"user"`
 }
 
-// 实现用户信息的获取
+// UserInfo 用户信息
+// @Summary 获取用户的基本信息
+// @Description 获取用户的 id、昵称，如果实现社交部分的功能，还会返回关注数和粉丝数
+// @Tags 用户接口
+// @Accept application/json
+// @Produce application/json
+// @Param user_id query string true "用户id"
+// @Param token query string true "用户鉴权token"
+// @Success 200 {object} UserinfoResponse
+// @Router /douyin/user/ [GET]
 func UserInfo(c *gin.Context) {
-	userId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
-	ownIdAny, _ := c.Get("user_id")
+	userId, err := strconv.ParseInt(c.Query("user_id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, UserinfoResponse{
+			Response: model.Response{StatusCode: 1, StatusMsg: "用户不存在"},
+		})
+	}
+	ownIdAny, token_user_id_exist := c.Get("user_id")
+	if !token_user_id_exist {
+		c.JSON(http.StatusOK, UserinfoResponse{
+			Response: model.Response{StatusCode: 1, StatusMsg: "用户不存在"},
+		})
+	}
 	ownId := ownIdAny.(int64)
 
 	user, err := service.Userinfo{}.SelectUserInfoById(userId, ownId)

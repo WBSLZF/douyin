@@ -31,7 +31,7 @@ func (VideoPublish) Upload(userInfoId int64, videoPath string, capturePath strin
 
 	//2. 对数据库进行可持久化操作
 	//2.1 用户投稿视频添加到video数据库
-	err = dao.Video{}.AddVideo(userInfoId, videoUrl, captrueUrl)
+	err = dao.Video{}.AddVideo(userInfoId, videoUrl, captrueUrl, title)
 	if err != nil {
 		return err
 	}
