@@ -98,8 +98,18 @@ type UserinfoResponse struct {
 // @Success 200 {object} UserinfoResponse
 // @Router /douyin/user/ [GET]
 func UserInfo(c *gin.Context) {
-	userId, _ := strconv.ParseInt(c.Query("user_id"), 10, 64)
-	ownIdAny, _ := c.Get("user_id")
+	userId, err := strconv.ParseInt(c.Query("user_id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusOK, UserinfoResponse{
+			Response: model.Response{StatusCode: 1, StatusMsg: "用户id转换异常"},
+		})
+	}
+	ownIdAny, token_user_id_exist := c.Get("user_id")
+	if !token_user_id_exist {
+		c.JSON(http.StatusOK, UserinfoResponse{
+			Response: model.Response{StatusCode: 1, StatusMsg: "用户不存在"},
+		})
+	}
 	ownId := ownIdAny.(int64)
 
 	user, err := service.Userinfo{}.SelectUserInfoById(userId, ownId)

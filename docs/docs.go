@@ -112,8 +112,7 @@ const docTemplate = `{
                         "type": "string",
                         "description": "可选参数，限制返回视频的最新投稿时间戳，精确到秒，不填表示当前时间",
                         "name": "latest_time",
-                        "in": "query",
-                        "required": true
+                        "in": "query"
                     },
                     {
                         "type": "string",

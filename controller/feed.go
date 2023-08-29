@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -23,7 +22,7 @@ type FeedResponse struct {
 // @Tags 视频接口
 // @Accept application/json
 // @Produce application/json
-// @Param latest_time query string true "可选参数，限制返回视频的最新投稿时间戳，精确到秒，不填表示当前时间"
+// @Param latest_time query string false "可选参数，限制返回视频的最新投稿时间戳，精确到秒，不填表示当前时间"
 // @Param token query string true "用户鉴权token"
 // @Success 200 {object} FeedResponse
 // @Router /douyin/feed/ [GET]
@@ -57,8 +56,6 @@ func checkToken(token string) (id int64) {
 
 // Do 视频流推送处理
 func (p *ProxyFeedVideoList) Do(id int64) error {
-	fmt.Println("---------------------------------------")
-	fmt.Println("user_id", id)
 	rawTimestamp := "" //p.Query("latest_time")
 	var latestTime time.Time
 	intTime, err := strconv.ParseInt(rawTimestamp, 10, 64)

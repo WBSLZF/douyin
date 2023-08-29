@@ -2,7 +2,6 @@ package dao
 
 import (
 	"errors"
-	"fmt"
 
 	// "sync"
 	"time"
@@ -33,7 +32,6 @@ func (v *VideoDAO) QueryVideoListByLatestTime(limit int, latestTime time.Time, v
 	}
 	return model.DB.Model(&model.Video{}).Where("create_at < ?", latestTime).
 		Order("create_at ASC").Limit(limit).
-		Select([]string{"id", "user_info_id", "play_url", "cover_url", "favorite_count", "comment_count", "create_at"}).
 		Find(videoList).Error
 }
 
@@ -53,7 +51,6 @@ func (v VideoDAO) GetVideoFavorState(userId int64, videoId int64) bool {
 	}
 	var n int
 	if model.DB.Raw("SELECT Count(*) FROM favor_videos WHERE video_id = ? AND user_info_id = ?", videoId, userId).Scan(&n); n == 0 {
-		fmt.Println("user_id", userId, "Video_Id", videoId)
 		return false
 	}
 	return true

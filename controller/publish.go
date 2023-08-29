@@ -14,7 +14,7 @@ import (
 
 type VideoListResponse struct {
 	model.Response
-	VideoList *[]model.Video `json:"video_list"`
+	VideoList []*model.Video `json:"video_list"`
 }
 
 // Publish check token then save upload file to public directory
@@ -110,8 +110,8 @@ func PublishList(c *gin.Context) {
 		})
 		return
 	}
-	token_user_id, _ := c.Get("user_id")
-	if user_id != token_user_id {
+	token_user_id, token_exist := c.Get("user_id")
+	if !token_exist || user_id != token_user_id {
 		c.JSON(http.StatusOK, VideoListResponse{
 			Response: model.Response{
 				StatusCode: 1,

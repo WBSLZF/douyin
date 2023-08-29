@@ -95,26 +95,37 @@ type FavoriteListResponse struct {
 // @Success 200 {object} FavoriteListResponse
 // @Router /douyin/favorite/list/ [GET]
 func FavoriteList(c *gin.Context) {
-	token := c.Query("token")
-
-	if _, exist := usersLoginInfo[token]; exist {
-		var uid int64 = 0
-		id, err := checkToken(token)
-		if err != nil {
-			favoriteActionError(c, err.Error())
-			return
-		}
-		if id != -1 {
-			uid = id
-			videoList, err := FavoriteListDo(c, uid)
-			if err != nil {
-				favoriteListError(c, "查询失败")
-				return
-			}
-			favoriteListOK(c, "成功查询到喜爱视频列表", videoList)
-		}
+	user_id, exist := c.Get("user_id")
+	if !exist {
+		favoriteListError(c, "该用户不存在")
+		return
 	}
-	favoriteListError(c, "用户不存在")
+	videoList, err := FavoriteListDo(c, user_id.(int64))
+	if err != nil {
+		favoriteListError(c, "查询用户喜欢列表失败")
+		return
+	}
+	favoriteListOK(c, "查询成功", videoList)
+	// token := c.Query("token")
+
+	// if _, exist := usersLoginInfo[token]; exist {
+	// 	var uid int64 = 0
+	// 	id, err := checkToken(token)
+	// 	if err != nil {
+	// 		favoriteActionError(c, err.Error())
+	// 		return
+	// 	}
+	// 	if id != -1 {
+	// 		uid = id
+	// 		videoList, err := FavoriteListDo(c, uid)
+	// 		if err != nil {
+	// 			favoriteListError(c, "查询失败")
+	// 			return
+	// 		}
+	// 		favoriteListOK(c, "成功查询到喜爱视频列表", videoList)
+	// 	}
+	// }
+	// favoriteListError(c, "用户不存在")
 }
 
 func FavoriteListDo(c *gin.Context, uid int64) (videos []*model.Video, error error) {

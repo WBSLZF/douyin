@@ -177,7 +177,6 @@ paths:
       - description: 可选参数，限制返回视频的最新投稿时间戳，精确到秒，不填表示当前时间
         in: query
         name: latest_time
-        required: true
         type: string
       - description: 用户鉴权token
         in: query
