@@ -48,3 +48,11 @@ func (u UserInfoDao) IsFollow(own_id, userid int64) bool {
 		return false
 	}
 }
+
+// 根据用户id查找所有其关注的人
+
+func (u UserInfoDao) FindAllFollow(user_id int64) ([]*model.UserInfo, error) {
+	var userList []*model.UserInfo
+	result := model.DB.Raw("select v.* from user_relations u JOIN user_infos v ON u.follow_id = v.id where u.user_info_id = ?", user_id).Scan(&userList)
+	return userList, result.Error
+}

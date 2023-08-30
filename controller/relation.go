@@ -10,8 +10,8 @@ import (
 )
 
 type UserListResponse struct {
-	Response model.Response
-	UserList []User `json:"user_list"`
+	model.Response
+	UserList []*model.UserInfo `json:"user_list"`
 }
 
 // RelationAction 关注操作
@@ -48,34 +48,56 @@ func RelationAction(c *gin.Context) {
 	RelationActionOK(c, "关注成功")
 }
 
-// FollowList all users have same follow list
+// FollowList 关注列表
+// @Summary 查找用户所关注的所有人
+// @Description 查找用户所关注的所有人
+// @Tags 社交接口
+// @Accept application/json
+// @Produce application/json
+// @Param user_id query string true "用户id"
+// @Param token query string true "用户鉴权token"
+// @Success 200 {object} UserListResponse
+// @Router /douyin/relation/follow/list/ [GET]
 func FollowList(c *gin.Context) {
+	user_id_string := c.Query("user_id")
+	user_id, _ := strconv.ParseInt(user_id_string, 10, 64)
+
+	userList, err := service.Follows{}.FollowList(user_id)
+	if err != nil {
+		c.JSON(http.StatusOK, UserListResponse{
+			Response: model.Response{
+				StatusCode: 1,
+				StatusMsg:  "查找用户关注列表失败",
+			},
+		})
+		return
+	}
 	c.JSON(http.StatusOK, UserListResponse{
 		Response: model.Response{
 			StatusCode: 0,
 		},
-		UserList: []User{DemoUser},
+		UserList: userList,
 	})
 }
 
 // FollowerList all users have same follower list
 func FollowerList(c *gin.Context) {
-	c.JSON(http.StatusOK, UserListResponse{
-		Response: model.Response{
-			StatusCode: 0,
-		},
-		UserList: []User{DemoUser},
-	})
+	// c.JSON(http.StatusOK, UserListResponse{
+	// 	Response: model.Response{
+	// 		StatusCode: 0,
+	// 	},
+	// 	UserList: []User{DemoUser},
+	// })
 }
 
 // FriendList all users have same friend list
 func FriendList(c *gin.Context) {
-	c.JSON(http.StatusOK, UserListResponse{
-		Response: model.Response{
-			StatusCode: 0,
-		},
-		UserList: []User{DemoUser},
-	})
+	// c.JSON(http.StatusOK, UserListResponse{
+	// 	Response: model.Response{
+	// 		StatusCode: 0,
+	// 	},
+	// 	UserList: []User{DemoUser},
+	// })
 }
 func RelationActionOK(c *gin.Context, msg string) {
 	c.JSON(http.StatusOK, model.Response{
