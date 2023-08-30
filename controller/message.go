@@ -8,16 +8,17 @@ import (
 	"time"
 
 	"github.com/RaymondCode/simple-demo/model"
+	"github.com/RaymondCode/simple-demo/service"
 	"github.com/gin-gonic/gin"
 )
 
-var tempChat = map[string][]Message{}
+var tempChat = map[string][]model.Message{}
 
 var messageIdSequence = int64(1)
 
 type ChatResponse struct {
 	Response    model.Response
-	MessageList []Message `json:"message_list"`
+	MessageList []model.Message `json:"message_list"`
 }
 
 // MessageAction no practical effect, just check if token is valid
@@ -31,16 +32,20 @@ func MessageAction(c *gin.Context) {
 		chatKey := genChatKey(user.Id, int64(userIdB))
 
 		atomic.AddInt64(&messageIdSequence, 1)
-		curMessage := Message{
+		curMessage := model.Message{
 			Id:         messageIdSequence,
 			Content:    content,
 			CreateTime: time.Now().Format(time.Kitchen),
 		}
-
+		err := service.SendMessage(chatKey, curMessage)
+		if err == nil {
+			c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "Message send fail"})
+			return
+		}
 		if messages, exist := tempChat[chatKey]; exist {
 			tempChat[chatKey] = append(messages, curMessage)
 		} else {
-			tempChat[chatKey] = []Message{curMessage}
+			tempChat[chatKey] = []model.Message{curMessage}
 		}
 		c.JSON(http.StatusOK, model.Response{StatusCode: 0})
 	} else {
@@ -56,8 +61,11 @@ func MessageChat(c *gin.Context) {
 	if user, exist := usersLoginInfo[token]; exist {
 		userIdB, _ := strconv.Atoi(toUserId)
 		chatKey := genChatKey(user.Id, int64(userIdB))
-
-		c.JSON(http.StatusOK, ChatResponse{Response: model.Response{StatusCode: 0}, MessageList: tempChat[chatKey]})
+		MessageList, err := service.MessageList(chatKey)
+		if err == nil {
+			tempChat[chatKey] = MessageList
+			c.JSON(http.StatusOK, ChatResponse{Response: model.Response{StatusCode: 0}, MessageList: tempChat[chatKey]})
+		}
 	} else {
 		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
 	}
