@@ -35,16 +35,6 @@ func (v *VideoDAO) QueryVideoListByLatestTime(limit int, latestTime time.Time, v
 		Find(videoList).Error
 }
 
-func (v VideoDAO) GetUserRelation(userId int64, userInfoId int64) bool {
-	if userId == 0 || userInfoId == 0 {
-		return false
-	}
-	if err := model.DB.Raw("SELECT COUNT(*) FROM user_relation WHERE follow_id = ? AND user_info_id = ?", userId, userInfoId).Error; err != nil {
-		return true
-	}
-	return false
-}
-
 func (v VideoDAO) GetVideoFavorState(userId int64, videoId int64) bool {
 	if userId == 0 || videoId == 0 {
 		return false

@@ -302,6 +302,52 @@
                 }
             }
         },
+        "/douyin/relation/action/": {
+            "post": {
+                "description": "用户用户之间关注",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "社交接口"
+                ],
+                "summary": "用户与用户之间的关注功能",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户鉴权token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "对方用户id",
+                        "name": "to_user_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "1-关注，2-取消关注",
+                        "name": "action_type",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/douyin/user/": {
             "get": {
                 "description": "获取用户的 id、昵称，如果实现社交部分的功能，还会返回关注数和粉丝数",
@@ -390,7 +436,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "用户"
+                    "用户接口"
                 ],
                 "summary": "用户注册",
                 "parameters": [
