@@ -56,3 +56,9 @@ func (u UserInfoDao) FindAllFollow(user_id int64) ([]*model.UserInfo, error) {
 	result := model.DB.Raw("select v.* from user_relations u JOIN user_infos v ON u.follow_id = v.id where u.user_info_id = ?", user_id).Scan(&userList)
 	return userList, result.Error
 }
+
+func (u UserInfoDao) FindAllFollower(user_id int64) ([]*model.UserInfo, error) {
+	var userList []*model.UserInfo
+	result := model.DB.Raw("select v.* from user_relations u JOIN user_infos v ON u.user_info_id = v.id where u.follow_id = ?", user_id).Scan(&userList)
+	return userList, result.Error
+}

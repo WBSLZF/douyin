@@ -1,4 +1,0 @@
-# github.com/RaymondCode/simple-demo/service
-service\followList.go:18:63: not enough arguments in call to dao.UserInfoDao.IsFollow
-	have (int64, int64)
-	want (dao.UserInfoDao, int64, int64)
