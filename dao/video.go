@@ -30,3 +30,8 @@ func (Video) FindVideoListByUserInfoId(userInfoId int64) ([]*model.Video, error)
 	result := model.DB.Where("user_info_id = ?", userInfoId).Find(&videoList)
 	return videoList, result.Error
 }
+func (Video) FindVideoById(videoId int64) (model.Video, error) {
+	video := model.Video{}
+	result := model.DB.Where("id = ?", videoId).Find(&video)
+	return video, result.Error
+}
