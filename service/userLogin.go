@@ -29,7 +29,9 @@ func (u UserLogin) Register(name, password string) (*UserLoginData, error) {
 	//2.fix 对存储在数据库密码进行加密
 	password = utils.MakePassWord(password)
 	userLogin := model.UserLogin{UserCount: name, PassWord: password}
-	userInfo := model.UserInfo{UserLogin: &userLogin, Name: name}
+	//2.fix 随机生成头像以及背景，个性签名
+	avatar, background, signature := utils.Random_information()
+	userInfo := model.UserInfo{UserLogin: &userLogin, Name: name, BackgroundImage: background, Avatar: avatar, Signature: signature}
 	//2.1 判断用户是否已经存在了
 	userExist := dao.UserInfoDao{}.IsUserInfoExistByName(name)
 	if userExist {

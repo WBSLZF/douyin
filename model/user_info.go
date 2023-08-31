@@ -17,4 +17,5 @@ type UserInfo struct {
 	TotalFavorited  string     `json:"total_favorited,omitempty"`
 	Avatar          string     `json:"avatar,omitempty"`           //用户头像
 	BackgroundImage string     `json:"background_image,omitempty"` //用户背景
+	Signature       string     `json:"signature,omitempty"`        //个人简介
 }

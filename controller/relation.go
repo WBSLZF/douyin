@@ -112,14 +112,36 @@ func FollowerList(c *gin.Context) {
 	})
 }
 
-// FriendList all users have same friend list
+// FriendList 好友列表
+// @Summary 查找用户的好友，关注了就是好友本质上和关注列表差不多
+// @Description 查找用户的好友，关注了就是好友本质上和关注列表差不多
+// @Tags 社交接口
+// @Accept application/json
+// @Produce application/json
+// @Param user_id query string true "用户id"
+// @Param token query string true "用户鉴权token"
+// @Success 200 {object} UserListResponse
+// @Router /douyin/relation/friend/list/ [GET]
 func FriendList(c *gin.Context) {
-	// c.JSON(http.StatusOK, UserListResponse{
-	// 	Response: model.Response{
-	// 		StatusCode: 0,
-	// 	},
-	// 	UserList: []User{DemoUser},
-	// })
+	user_id_string := c.Query("user_id")
+	user_id, _ := strconv.ParseInt(user_id_string, 10, 64)
+
+	userList, err := service.Follows{}.FollowList(user_id)
+	if err != nil {
+		c.JSON(http.StatusOK, UserListResponse{
+			Response: model.Response{
+				StatusCode: 1,
+				StatusMsg:  "查找用户关注列表失败",
+			},
+		})
+		return
+	}
+	c.JSON(http.StatusOK, UserListResponse{
+		Response: model.Response{
+			StatusCode: 0,
+		},
+		UserList: userList,
+	})
 }
 func RelationActionOK(c *gin.Context, msg string) {
 	c.JSON(http.StatusOK, model.Response{
