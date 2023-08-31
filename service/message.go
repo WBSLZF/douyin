@@ -17,14 +17,15 @@ func SendMessage(chatkey string, message model.Message) error {
 }
 
 type MessList struct {
-	Messages []model.Message `json:"message_list"`
+	chatkey  string
+	Messages []model.Message
 }
 
 func MessageList(chatkey string) (messageList []model.Message, error error) {
-	var Messlist []model.Message
-	err := dao.MessageList(chatkey, &Messlist)
+	messlist := MessList{chatkey: chatkey}
+	err := dao.MessageList(chatkey, &messlist.Messages)
 	if err != nil {
-		return Messlist, err
+		return messlist.Messages, err
 	}
-	return Messlist, nil
+	return messlist.Messages, nil
 }
