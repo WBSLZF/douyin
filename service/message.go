@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/RaymondCode/simple-demo/dao"
@@ -18,19 +17,23 @@ func SendMessage(user_id int64, to_user_id int64, content string) error {
 	return nil
 }
 
-func MessageList(user_id int64, to_user_id int64) (messageList []*model.Message, error error) {
+func MessageList(user_id int64, to_user_id int64, pre_msg_time int64) (messageList []*model.Message, error error) {
 	messlist, err := dao.MessageList(user_id, to_user_id)
+	result := []*model.Message{}
 	//返回的是时间戳
 	for id := range messlist {
-		timeDate := (*messlist[id]).TimeDate
-		(*messlist[id]).CreateTime = Time2Unix(timeDate)
-		fmt.Println("------------------------------------------------------------")
-		fmt.Println("时间戳是:", (*messlist[id]).CreateTime)
+		createTime := Time2Unix((*messlist[id]).TimeDate)
+		if createTime > pre_msg_time {
+			(*messlist[id]).CreateTime = createTime
+			result = append(result, messlist[id])
+		}
+		// fmt.Println("------------------------------------------------------------")
+		// fmt.Println("时间戳是:", (*messlist[id]).CreateTime)
 	}
 	if err != nil {
 		return nil, err
 	}
-	return messlist, nil
+	return result, nil
 }
 
 func Time2Unix(datetime string) int64 {

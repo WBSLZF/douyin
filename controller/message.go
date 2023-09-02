@@ -64,22 +64,17 @@ func MessageChat(c *gin.Context) {
 	user_id, user_id_exist := c.Get("user_id")
 	if user_id_exist {
 		to_user_id, _ := strconv.ParseInt(c.Query("to_user_id"), 10, 64)
-		messageList, err := service.MessageList(user_id.(int64), to_user_id)
-		// for id := range messageList {
-		// 	fmt.Println(*messageList[id])
-		// }
+		pre_msg_time, _ := strconv.ParseInt(c.Query("pre_msg_time"), 10, 64) //前端还有个pre_msg_time 我们可以根据pre_msg_time来保证只添加pre_msg_time之后的消息
+		messageList, err := service.MessageList(user_id.(int64), to_user_id, pre_msg_time)
 		if err == nil {
-			// tempChat[chatKey] = messageList
 			c.JSON(http.StatusOK, ChatListResponse{Response: model.Response{StatusCode: 0},
 				MessageList: messageList})
 			return
 		}
 		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "Find Chat Failed"})
 		return
-	} else {
-		c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
-		return
 	}
+	c.JSON(http.StatusOK, model.Response{StatusCode: 1, StatusMsg: "User doesn't exist"})
 }
 
 // func genChatKey(userIdA int64, userIdB int64) string {
