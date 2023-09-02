@@ -27,8 +27,6 @@ func MessageList(user_id int64, to_user_id int64, pre_msg_time int64) (messageLi
 			(*messlist[id]).CreateTime = createTime
 			result = append(result, messlist[id])
 		}
-		// fmt.Println("------------------------------------------------------------")
-		// fmt.Println("时间戳是:", (*messlist[id]).CreateTime)
 	}
 	if err != nil {
 		return nil, err
