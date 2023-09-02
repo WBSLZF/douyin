@@ -82,7 +82,7 @@ func Login(c *gin.Context) {
 	})
 }
 
-type UserinfoResponse struct {
+type UserInfoResponse struct {
 	model.Response
 	User model.UserInfo `json:"user"`
 }
@@ -95,31 +95,34 @@ type UserinfoResponse struct {
 // @Produce application/json
 // @Param user_id query string true "用户id"
 // @Param token query string true "用户鉴权token"
-// @Success 200 {object} UserinfoResponse
+// @Success 200 {object} UserInfoResponse
 // @Router /douyin/user/ [GET]
 func UserInfo(c *gin.Context) {
 	userId, err := strconv.ParseInt(c.Query("user_id"), 10, 64)
 	if err != nil {
-		c.JSON(http.StatusOK, UserinfoResponse{
+		c.JSON(http.StatusOK, UserInfoResponse{
 			Response: model.Response{StatusCode: 1, StatusMsg: "用户不存在"},
 		})
+		return
 	}
 	ownIdAny, token_user_id_exist := c.Get("user_id")
 	if !token_user_id_exist {
-		c.JSON(http.StatusOK, UserinfoResponse{
+		c.JSON(http.StatusOK, UserInfoResponse{
 			Response: model.Response{StatusCode: 1, StatusMsg: "用户不存在"},
 		})
+		return
 	}
 	ownId := ownIdAny.(int64)
 
 	user, err := service.Userinfo{}.SelectUserInfoById(userId, ownId)
 	if err != nil {
-		c.JSON(http.StatusOK, UserinfoResponse{
+		c.JSON(http.StatusOK, UserInfoResponse{
 			Response: model.Response{StatusCode: 1, StatusMsg: err.Error()},
 		})
+		return
 	}
 
-	c.JSON(http.StatusOK, UserinfoResponse{
+	c.JSON(http.StatusOK, UserInfoResponse{
 		Response: model.Response{StatusCode: 0},
 		User:     user,
 	})

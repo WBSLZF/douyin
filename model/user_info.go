@@ -5,7 +5,7 @@ type UserInfo struct {
 	Name          string      `json:"name,omitempty"`
 	FollowCount   int64       `json:"follow_count,omitempty"`
 	FollowerCount int64       `json:"follower_count,omitempty"`
-	IsFollow      bool        `json:"is_follow,omitempty"`
+	IsFollow      bool        `json:"is_follow,omitempty" gorm:"-"`       //这个数据只是前端需要判断，临时生成，数据库不需要存
 	Comments      []*Comment  `json:"-"`                                  //用户有多个评论 一对多
 	Videos        []*Video    `json:"-" gorm:"foreignkey:UserInfoId"`     //用户投稿了多个视频 一对多
 	Follows       []*UserInfo `json:"-" gorm:"many2many:user_relations;"` //用户关注 多对多
@@ -17,4 +17,5 @@ type UserInfo struct {
 	TotalFavorited  string     `json:"total_favorited,omitempty"`
 	Avatar          string     `json:"avatar,omitempty"`           //用户头像
 	BackgroundImage string     `json:"background_image,omitempty"` //用户背景
+	Signature       string     `json:"signature,omitempty"`        //个人简介
 }

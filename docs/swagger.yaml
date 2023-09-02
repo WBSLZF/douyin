@@ -348,6 +348,37 @@ paths:
       summary: 查看用户所有投稿的视频
       tags:
       - 视频接口
+  /douyin/relation/action/:
+    post:
+      consumes:
+      - application/json
+      description: 用户用户之间关注
+      parameters:
+      - description: 用户鉴权token
+        in: query
+        name: token
+        required: true
+        type: string
+      - description: 对方用户id
+        in: query
+        name: to_user_id
+        required: true
+        type: string
+      - description: 1-关注，2-取消关注
+        in: query
+        name: action_type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Response'
+      summary: 用户与用户之间的关注功能
+      tags:
+      - 社交接口
   /douyin/user/:
     get:
       consumes:
@@ -425,5 +456,5 @@ paths:
             $ref: '#/definitions/controller.UserLoginResponse'
       summary: 用户注册
       tags:
-      - 用户
+      - 用户接口
 swagger: "2.0"
