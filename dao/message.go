@@ -18,7 +18,7 @@ func SendMessage(message model.Message) error {
 
 func MessageList(from_user_id, to_user_id int64) (messages []*model.Message, error error) {
 	var Messages []*model.Message
-	if err := model.DB.Raw("select * from messages where (from_user_id = ? and to_user_id = ?) or (from_user_id = ? and to_user_id = ?) ORDER BY time_date DESC", from_user_id, to_user_id, to_user_id, from_user_id).Find(&Messages).Error; err != nil {
+	if err := model.DB.Raw("select * from messages where (from_user_id = ? and to_user_id = ?) or (from_user_id = ? and to_user_id = ?) ORDER BY time_date ASC", from_user_id, to_user_id, to_user_id, from_user_id).Find(&Messages).Error; err != nil {
 		return nil, err
 	}
 	return Messages, nil
